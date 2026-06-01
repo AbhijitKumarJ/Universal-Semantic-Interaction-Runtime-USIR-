@@ -1,0 +1,5 @@
+# Turn 22 — You
+
+> **User asked:**
+
+now expand this idea to any web app, to begin with start with a html designer app where user can speak natural for making or adding changes to ui in vague words but ui understands the intent and guides the user to best possible solution. Example ui starts with 64 by 64 grid of 3 layers , one in focus, one above one below based on z index. Commands can to to select a layer or a panel/element on a layer based on size, direction(right, left, top , bottom etc), color, style etc. Plausible elements should get highlighted on initial command along with exact audio friendly name given to it shown on ui with a hand wave animation. next command should take last best guess, possible choices a relative reference in context to drill down or correct the selection. then, commands to resize, move back or front etc

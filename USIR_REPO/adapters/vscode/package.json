@@ -1,0 +1,23 @@
+{
+  "name": "@usir/vscode-adapter",
+  "version": "0.1.0",
+  "description": "VS Code adapter — bridges VS Code Extension API to USIR SemanticSnapshot",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc -w",
+    "clean": "rm -rf dist",
+    "test": "echo 'no tests yet'",
+    "lint": "echo 'no lint yet'",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@usir/protocol": "workspace:*",
+    "@usir/runtime": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3",
+    "@types/vscode": "^1.85.0"
+  }
+}

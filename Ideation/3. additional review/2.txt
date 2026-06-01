@@ -1,0 +1,851 @@
+**USIR**  
+**Universal Semantic Interaction Runtime**  
+**Towards a Post-GUI Computing Architecture**
+
+---
+
+### Executive Summary
+
+Modern computing is trapped in the GUI paradigm: applications are built around pixels, buttons, menus, and screens optimized for mice and keyboards. This creates massive redundancy, poor accessibility, device fragmentation, and data silos.
+
+**USIR** is a semantic operating layer that sits between humans (and agents) and software. It decouples **human intent** from **visual presentation** and **application implementation**. Instead of forcing users into app-specific UIs, USIR operates on a shared **semantic graph** using a **Universal Intent Ontology**, rich **Interaction Memory**, and pluggable **Semantic Adapters**.
+
+The result is:
+- Truly ambient, modality-agnostic interaction (voice, screen, XR, haptic, gesture, etc.)
+- User-sovereign Personal Semantic Cloud
+- Safe, auditable agentic delegation
+- Federated collaboration across sovereign runtimes
+- A foundation for a post-application capability marketplace
+
+USIR does not replace existing software immediately. It progressively **semanticizes** it through adapters while providing immediate value as a powerful IDE copilot.
+
+**Core Thesis**:  
+Software should expose *meaning*, not presentation. The runtime should understand *intent*, *context*, *memory*, and *relationships*.
+
+---
+
+### Vision
+
+#### Current Computing
+```
+Human → GUI (Buttons, Menus, Screens) → Application → Siloed Data
+```
+Every app reinvents navigation, state, commands, and collaboration.
+
+#### USIR Computing
+```
+Human (Intent + Modality) → USIR Runtime (Semantic Graph + Memory) → Capabilities (Adapters / Processors) → Unified Personal Graph
+```
+- Devices become thin presentation layers.
+- Applications become stateless semantic processors.
+- State, history, and context belong to the user.
+- Voice, XR, desktop, and agents all operate on the same semantic reality.
+
+---
+
+### Architectural Evolution
+
+**Generation 1: Universal Multimodal Interfaces**  
+Templated, device/interface/medium-independent interactions (`InteractionWaypoint` XML) rendered differently based on client capabilities.
+
+**Generation 2: Ambient Computing & Personal Cloud OS**  
+Thin clients (phones, watches, XR glasses) connected to a user-owned VPS “brain.” State lives centrally; devices are sensory/presentation endpoints.
+
+**Generation 3: Semantic Computing (The Core Innovation)**  
+Abandon presentation entirely. Everything becomes nodes and relationships in a semantic graph. Intents operate on meaning. Adapters project legacy software into this graph.
+
+---
+
+### Core Architectural Pillars
+
+#### 1. Universal Intent Ontology (The “HTTP of Interaction”)
+A layered set of ~50 universal cognitive verbs that apply across domains.
+
+- **L0 Meta**: Confirm, Cancel, Undo, Explain, Learn
+- **L0.5 Provenance**: Track *why* a mutation occurred (actor, rationale, authorization, causal DAG)
+- **L1–L2 Navigation & Focus**
+- **L3 Information**: Explain, Compare, Trace, Summarize
+- **L4–L5 Manipulation & Execution**: Edit, Create, Delete, Execute
+- **L6 Creation & Scaffolding**
+- **L7 Delegation**: Plan, Delegate to agents with sandboxed sub-graphs
+- **L8 Collaboration**: Share, Discuss, Annotate (enables asymmetric modality collaboration)
+
+#### 2. Interaction Memory
+Critical for natural human reference resolution (“that file”, “the previous one”, “the thing below it”, “what we discussed earlier”).
+
+Combines:
+- Temporal ring buffer
+- Spatial (2D/3D) indexing
+- Conversational context
+- Semantic relationships
+
+Enables Fused Intents: Linguistic + Pointing (cursor/gaze) + Implicit signals.
+
+#### 3. Semantic Snapshot & Tiered Context Engine
+The single source of truth.
+
+- **Hot Tier** (<16ms): Active focus, immediate state
+- **Warm Tier** (~150ms): Diagnostics, recent context
+- **Cold Tier** (seconds): Full dependency graph, historical data
+
+**Semantic Checksumming** + background VLM re-compilation handles UI drift efficiently.
+
+#### 4. Semantic Adapters (The Bridge)
+- **Native** (LSP, VS Code Extension API)
+- **Zero-Shot VLM Compiler** (ingests A11y tree + screenshot once → generates deterministic hooks)
+- **Browser/DOM**
+- **OS Accessibility**
+- **XR / Spatial / IoT** (3D raycasting, edge-filtered telemetry)
+- **Physical devices** as first-class `SemanticEntity`s
+
+Adapters emit `SemanticSnapshot`s. The runtime remains agnostic.
+
+#### 5. Runtime Brain
+- **Intent Router** (single-pass LLM classification)
+- **Topological Executor** (deterministic DAG execution with `dependsOn`)
+- **Projection Engine** (Snapshot → `ProjectedView` + `RenderHint` for clients)
+- **Proactive Engine** (implicit signals → Reverse Collaborative Narrowing)
+- **Provenance Store** (append-only causal DAG for auditability, rollback, explainability)
+
+#### 6. Federation & Collaboration (A2U + P2P)
+- Sovereign runtimes connected via WebRTC + CRDTs (Yjs) on semantic sub-graphs
+- Vector clocks for causal ordering
+- Local enforcement of permissions and trust
+- **Asymmetric Modality Collaboration**: One user in car (voice), another at desk (XR) working on the same semantic entities.
+
+---
+
+### Key Protocols & Data Structures
+
+- **`InteractionWaypoint`**: Legacy multimodal template (still useful for thin clients)
+- **`SemanticSnapshot`**
+- **`IntentEnvelope`** + **`ProvenanceEnvelope`**
+- **`A2U` (Agent-to-USIR)**: Checkpoints, approvals, uncertainty surfacing
+- **Federation Protocol**: Handshake, CRDT sync, vector clocks, signed messages
+
+---
+
+### MVP Strategy (Recommended Starting Point)
+
+**USIR IDE Runtime** (VS Code / Cursor extension)
+
+**Goals**:
+- Deliver immediate developer value (Audio-Native + Agentic UI)
+- Validate core loop (Intent → Memory → Snapshot → Executor)
+- Stress-test adapters on complex, mutable UIs
+- Bootstrap the Universal Intent Ontology
+
+**Core Components to Build First**:
+1. Semantic Snapshot + Tiered Context
+2. Interaction Memory
+3. Intent Router + Topological Executor
+4. VS Code Native Adapter + Zero-Shot prototype
+5. Provenance layer
+6. Audio-Native interface
+
+This MVP alone can compete with (and surpass) current AI IDEs while laying foundation for everything else.
+
+---
+
+### Phased Roadmap
+
+**Phase 1 (Months 1-4)**: IDE Semantic Runtime + Ontology v0.1  
+**Phase 2 (Months 5-8)**: Browser adapter, full Provenance, Proactive Engine  
+**Phase 3 (Months 9-12)**: Personal Semantic Cloud (VPS/self-hosted), A2U agent delegation  
+**Phase 4**: XR / Ambient Sensorium + Physical Graph  
+**Phase 5**: Federation, Asymmetric Collaboration, Capability Marketplace
+
+---
+
+### Research Challenges & Open Problems
+
+1. **Universal Intent Ontology Design** — The hardest and most important problem.
+2. **Robust Interaction Memory & Reference Resolution**
+3. **VLM Compiler Reliability & Semantic Checksumming**
+4. **Cold Path**: Graph persistence, versioning, backup, migration, and portability.
+5. **Federated Trust & Cryptographic Capabilities** (inspired by UCAN)
+6. **Semantic Economics**: Dynamic capability discovery and routing.
+
+---
+
+### Recommended Tech Stack
+
+- **Language**: TypeScript (core) + Rust (performance-critical adapters)
+- **Graph**: Specialized in-memory + persistent (Neo4j/Memgraph or custom)
+- **CRDTs**: Yjs / Automerge
+- **Execution**: Custom Topological Executor + Temporal.io if needed
+- **AI**: Fast local models for routing + frontier models for planning/compilation
+- **P2P**: WebRTC + WebTransport
+
+---
+
+### Final Positioning
+
+**USIR is not**:
+- Another voice assistant
+- An XR framework
+- Yet another AI agent platform
+
+**USIR is**:
+> A semantic operating layer for the post-GUI era — providing a universal protocol for intent, memory, and meaning that sits between humans, agents, and all software.
+
+It is the architectural successor to HTML (documents) and TCP/IP (networks) — but for **interaction itself**.
+
+---
+
+**Appendix** (can be expanded later):
+- Detailed type definitions (`SemanticEntity`, `IntentEnvelope`, etc.)
+- `InteractionWaypoint` XML schema
+- Full Intent Ontology catalog
+- Adapter interface specification
+- Security & privacy model
+
+---
+
+This Master Design Document synthesizes the entire conversation history, all reviews, and architectural refinements. It is ready to serve as the canonical reference for implementation, open-sourcing, or attracting collaborators.
+
+Would you like me to expand any section (e.g., full Ontology catalog, detailed types, security model, or a living roadmap with milestones)? Or generate supporting artifacts like the protocol spec or monorepo structure?
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+**Universal Intent Ontology v0.1**  
+**USIR — Universal Semantic Interaction Runtime**
+
+This ontology defines ~50 core intents organized into layers. It serves as the **"HTTP of Interaction"** — a stable, universal vocabulary that adapters, runtimes, agents, and humans all understand.
+
+### Design Principles
+- **Layered & Extensible**: Higher layers build on lower ones.
+- **Composable**: Intents can be chained in execution plans.
+- **Modality-Agnostic**: Same intent works for voice, gaze, keyboard, or XR.
+- **Human-Natural**: Supports fuzzy references via Interaction Memory.
+- **Machine-Actionable**: Clear parameters + expected outputs.
+
+---
+
+### L0 — Meta Intents (Foundational Control)
+
+| Intent                  | Description                                      | Key Parameters                     | Example |
+|-------------------------|--------------------------------------------------|------------------------------------|--------|
+| `Confirm`               | Affirm an action or offer                        | target?, reason?                   | "Yes", "Go ahead" |
+| `Cancel`                | Abort current operation                          | target?, reason                    | "Stop", "Never mind" |
+| `Undo`                  | Revert last mutation(s)                          | scope (last / subtree / all)       | "Undo that" |
+| `Redo`                  | Re-apply undone action                           | -                                  | "Redo" |
+| `Explain`               | Request clarification or reasoning               | target, depth                      | "Why did you do that?" |
+| `Learn`                 | Teach the system a preference or rule            | preference, condition              | "When I say X, always do Y" |
+| `Help`                  | Get contextual assistance                        | topic?                             | "Help me with this" |
+
+**L0.5 — Provenance Intents** (Audit & Trust)
+
+| Intent                    | Description                                      | Key Parameters |
+|---------------------------|--------------------------------------------------|----------------|
+| `ExplainMutation`         | Why did this change happen?                      | target, timeframe |
+| `ShowProvenance`          | Show causal history of an entity                 | target, depth |
+| `AuditLog`                | Export signed provenance for a scope             | scope, format |
+
+---
+
+### L1 — Navigation & Discovery
+
+| Intent             | Description                              | Key Parameters                  | Example |
+|--------------------|------------------------------------------|---------------------------------|---------|
+| `Locate`           | Find something by description            | query, filters                  | "Find the payment service" |
+| `Open`             | Open / focus an entity                   | target                          | "Open main.py" |
+| `GoTo`             | Navigate to a location                   | destination (spatial/semantic)  | "Go to the error" |
+| `Search`           | Broad semantic search                    | query, scope                    | "Search for auth bugs" |
+| `List`             | Enumerate related items                  | target, relation                | "List functions in this file" |
+
+---
+
+### L2 — Focus & Attention
+
+| Intent              | Description                                 | Key Parameters |
+|---------------------|---------------------------------------------|----------------|
+| `Focus`             | Bring entity into primary attention         | target |
+| `Highlight`         | Visually/verbally emphasize                 | target, style |
+| `Pin`               | Keep in context persistently                | target |
+| `CompareFocus`      | Focus on multiple items for comparison      | targets[] |
+
+---
+
+### L3 — Information & Understanding
+
+| Intent             | Description                                      | Key Parameters                    |
+|--------------------|--------------------------------------------------|-----------------------------------|
+| `Summarize`        | Create concise overview                          | target, style (brief/detailed)    |
+| `Explain`          | Deep explanation                                 | target, audience                  |
+| `Compare`          | Compare two or more entities                     | targets[], criteria               |
+| `Trace`            | Follow dependencies or call chains               | target, direction                 |
+| `Retrieve`         | Get specific data                                | target, fields                    |
+| `Analyze`          | Perform deeper analysis                          | target, analysisType              |
+| `Predict`          | Forecast outcomes                                | target, scenario                  |
+
+---
+
+### L4–L5 — Manipulation & Execution
+
+| Intent             | Description                                      | Key Parameters |
+|--------------------|--------------------------------------------------|----------------|
+| `Edit`             | Modify existing entity                           | target, change, mode (precise/fuzzy) |
+| `Refactor`         | Structural improvement                           | target, goal |
+| `Transform`        | Convert format / representation                  | target, toType |
+| `Delete`           | Remove entity                                    | target, confirm |
+| `Move`             | Relocate entity                                  | target, destination |
+| `Execute`          | Run code / command / workflow                    | target, args |
+| `RunTest`          | Execute tests                                    | scope |
+| `Build`            | Trigger build process                            | target |
+
+---
+
+### L6 — Creation & Scaffolding
+
+| Intent                | Description                                | Key Parameters |
+|-----------------------|--------------------------------------------|----------------|
+| `Create`              | Create new entity                          | type, name, template |
+| `Scaffold`            | Generate boilerplate structure             | type, features |
+| `Generate`            | AI-generated content                       | targetType, spec |
+| `Duplicate`           | Clone with modifications                   | target, changes |
+| `Import`              | Bring external data in                     | source, mapping |
+
+---
+
+### L7 — Delegation & Agency
+
+| Intent                | Description                                      | Key Parameters |
+|-----------------------|--------------------------------------------------|----------------|
+| `Plan`                | Create multi-step execution plan                 | goal, constraints |
+| `Delegate`            | Hand off task to agent                           | goal, agentProfile, constraints, sandbox |
+| `Monitor`             | Track progress of delegated task                 | taskId |
+| `Approve`             | Approve agent checkpoint                         | checkpointId |
+| `Reject`              | Reject agent proposal                            | checkpointId, reason |
+| `PauseAgent`          | Temporarily halt agent                           | agentId |
+| `ResumeAgent`         | Continue agent execution                         | agentId |
+
+---
+
+### L8 — Collaboration & Social
+
+| Intent                | Description                                      | Key Parameters |
+|-----------------------|--------------------------------------------------|----------------|
+| `Share`               | Share entity/subgraph with peer                  | target, collaborator, permissions |
+| `Discuss`             | Start discussion on entity                       | target, message |
+| `Annotate`            | Add comment / metadata                           | target, content |
+| `RequestFeedback`     | Ask peer for input                               | target, question |
+| `Merge`               | Merge changes from peer                          | source |
+| `ResolveConflict`     | Handle merge conflict                            | conflictId |
+
+---
+
+### Cross-Cutting / Compound Intents (Combinations)
+
+These are commonly composed:
+
+- `RefactorAndTest`
+- `MigrateAndValidate`
+- `ReviewAndApprove`
+- `DebugAndFix`
+- `DocumentAndShare`
+
+---
+
+### Total Count
+- L0 + L0.5: 10
+- L1–L2: 9
+- L3: 7
+- L4–L5: 8
+- L6: 5
+- L7: 7
+- L8: 6
+- **Total: 52**
+
+---
+
+### Usage in Runtime
+
+Every incoming user utterance or agent action is mapped to one (or a sequence of) these intents by the **Intent Router**.
+
+Example mapping:
+```json
+{
+  "raw": "refactor the auth module to use JWT and add tests",
+  "classified": [
+    { "intent": "Refactor", "target": "auth_module", "goal": "use JWT" },
+    { "intent": "Create", "type": "test_suite", "relatedTo": "auth_module" },
+    { "intent": "Execute", "target": "test_suite" }
+  ]
+}
+```
+
+---
+
+**Next Steps Recommendations**
+
+1. **Version this as v0.1** and put it in `@usir/protocol`
+2. Add formal JSON Schema + TypeScript types for each intent
+3. Create an **Intent Resolver** that can expand fuzzy natural language into precise intent trees using Interaction Memory
+4. Build a small validation suite of 100+ example utterances → intent mappings
+
+Would you like me to:
+- Generate full TypeScript interfaces for all intents?
+- Create example utterance-to-intent training/few-shot data?
+- Expand any specific layer with more intents?
+- Add capability matching rules (which adapters support which intents)?
+
+Let me know how you'd like to proceed.
+
+
+
+
+
+
+
+
+
+
+
+**Exploring CRDTs for Semantic Graphs in USIR**
+
+CRDTs (Conflict-free Replicated Data Types) are a natural fit for USIR’s **federated semantic graphs**, enabling P2P collaboration between sovereign runtimes without a central server. They guarantee **eventual consistency** even with concurrent edits, network partitions, or offline work — exactly what’s needed for asymmetric modality collaboration, agent delegation, and multi-user sub-graph sharing.
+
+### Why CRDTs Matter for USIR Semantic Graphs
+
+USIR’s semantic graph consists of:
+- **Nodes** (`SemanticEntity`): Files, functions, tasks, physical devices, agents, etc.
+- **Edges/Relations**: `dependsOn`, `locatedIn`, `createdBy`, `references`, etc.
+- **Attributes**: Provenance, metadata, render hints, capabilities.
+- **Dynamic aspects**: Hot/Warm/Cold tiers, Interaction Memory references, execution plans.
+
+In federation, multiple USIR instances share **sub-graphs** and apply intents concurrently. Traditional locking or central coordination would break the ambient, sovereign, offline-first vision. CRDTs solve this by making operations **commutative** (order-independent) or by providing deterministic merge rules.
+
+### Challenges of Applying CRDTs to Graphs
+
+Graphs are harder than text/lists/maps because:
+- **Tombstones & Deletes**: Deleting a node/edge must not silently break concurrent additions (use tombstones or version vectors).
+- **Structural Integrity**: Maintaining DAG invariants or preventing cycles during merges.
+- **Reference Stability**: "That file" or spatial references must remain valid after concurrent changes (Interaction Memory helps here).
+- **Metadata Bloat**: Each node/edge may need unique IDs, causal metadata, or provenance.
+- **Partial Replication**: USIR often shares only sub-graphs, not the entire world graph.
+
+Recent research (e.g., Directed Acyclic Graph CRDTs) and libraries address many of these.
+
+### Recommended CRDT Approaches for USIR
+
+#### 1. **Hybrid / Composable Strategy (Recommended)**
+Don’t CRDT the entire raw graph. Instead:
+
+- Use **Yjs** (or Loro/Automerge) for the **structural backbone** (Maps for entities, arrays/trees for relations).
+- Overlay **semantic intent application** on top: Intents are applied through the deterministic `TopologicalExecutor`, which then mutates the CRDT structures.
+- Store **Provenance** and heavy metadata in a separate append-only log (not fully CRDT’d, but versioned and synced).
+
+**Why this wins**:
+- Leverages mature libraries for low-level sync.
+- Keeps high-level semantics (intents, provenance) under USIR control for safety/auditability.
+- Matches the existing design where peer intents flow through the local executor.
+
+#### 2. Popular Libraries Evaluated
+
+| Library     | Strengths for USIR                              | Weaknesses                          | Best For |
+|-------------|------------------------------------------------|-------------------------------------|----------|
+| **Yjs**     | Mature, fast, excellent ecosystem (WebRTC, providers), SharedMap + custom types, strong community | Less "JSON-native" than Automerge   | General federation, real-time |
+| **Automerge** | True JSON-like documents, great for offline-first, good memory improvements in v2/v3 | Slightly heavier for very large graphs | Personal Cloud state |
+| **Loro**    | High performance (Eg-walker), supports trees/movable lists, modern | Younger ecosystem                   | Performance-critical spatial/XR |
+| **Custom Graph CRDT** | Full control over semantic rules (e.g., DAG CRDTs) | High implementation effort          | Long-term core |
+
+**Recommendation**: Start with **Yjs** for the MVP federation layer (as sketched in previous blogs). It’s battle-tested for collaborative apps and has good support for custom shared types.
+
+#### 3. Concrete Implementation Patterns for Semantic Graphs
+
+**Entity Storage**:
+```typescript
+// Using Yjs
+const entities = doc.getMap<SerializedEntity>('entities');
+const relations = doc.getMap<Y.Array<string>>('relations'); // or adjacency list
+```
+
+**Applying an Intent** (local or from peer):
+```typescript
+function applyEditIntent(intent: EditIntent, graph: FederatedEntityGraph) {
+  doc.transact(() => {
+    const entity = entities.get(intent.target);
+    if (!entity) return;
+
+    // Semantic mutation (business logic)
+    const updated = executeEdit(entity, intent.change);
+
+    entities.set(intent.target, updated);
+
+    // Record provenance (separate structure or embedded)
+    provenanceLog.push(createProvenance(intent));
+  });
+}
+```
+
+**Tombstones for Safe Deletes**:
+Never hard-delete in shared sub-graphs. Mark as `tombstoned: true` + timestamp + actor. Peers can clean up tombstones after consensus (via vector clocks or explicit GC intents).
+
+**Interaction Memory Integration**:
+- Store recent references as a CRDT List or Map with stable IDs.
+- Use spatial indexing (e.g., R-trees or simple bounding volumes in XR) that can be partially synced.
+
+**Sub-Graph Sharing**:
+- On `ShareIntent`, create a new Yjs document (or sub-document) containing only the projected sub-graph.
+- Use Yjs sub-documents or scoping to isolate shared parts while keeping private state local.
+
+### Benefits for USIR
+
+- **True P2P Federation**: Works offline; merges cleanly on reconnect (vector clocks handle ordering).
+- **Asymmetric Collaboration**: Changes from voice user or XR user converge naturally.
+- **Agent Safety**: Sandboxed sub-graphs can be CRDT-backed with strict permissions enforced locally.
+- **Provenance Synergy**: CRDT updates can embed or reference provenance records for full audit trails.
+- **Scalability**: Only sync deltas; Hot Tier remains fast and local.
+
+### Trade-offs & Mitigations
+
+- **Metadata Overhead**: Mitigate with aggressive pruning of old tombstones + compression.
+- **Merge Semantics**: Define clear "last meaningful win" or domain-specific rules (e.g., via intents) so merges feel intuitive.
+- **Performance on Large Graphs**: Use partial replication + tiered syncing (only sync Hot/Warm tiers in real-time).
+- **Complexity**: Start simple (Yjs Maps + Lists) and evolve toward specialized graph CRDTs.
+
+### Open Research Areas
+
+- Dedicated **Semantic Graph CRDT** that understands ontologies and provenance natively.
+- Efficient **partial replication** of sub-graphs with causal consistency.
+- Combining CRDTs with **vector embeddings** for semantic search within the graph.
+- Garbage collection strategies that respect provenance history.
+
+**Next Practical Steps for USIR**:
+1. Prototype a shared semantic sub-graph using Yjs for 2–3 entities (file + functions).
+2. Implement intent application on top of CRDT mutations.
+3. Add vector clock + signature layer for the federation protocol.
+4. Test offline → reconnect scenarios with Interaction Memory references.
+
+This approach keeps USIR’s sovereign, intent-first philosophy while providing robust multi-user and offline capabilities.
+
+Would you like:
+- A detailed code skeleton for****Universal Intent Ontology — Utterance-to-Intent Few-Shot Examples**
+
+This dataset is designed for training / few-shot prompting the **Intent Router**. Each example includes:
+
+- **Raw Utterance** (natural speech, various styles)
+- **Context** (optional — Interaction Memory state)
+- **Classified Intents** (sequence + parameters)
+
+---
+
+### **L0 — Meta & L0.5 — Provenance**
+
+| Raw Utterance | Context | Classified Intents |
+|-------------------------------------------|----------------------------------|--------------------|
+| "Yes, do it." | After agent proposal | `Confirm` |
+| "Stop everything." | — | `Cancel` |
+| "Undo the last change to the login file." | Last edit was on `auth.ts` | `Undo` {scope: "last", target: "auth.ts"} |
+| "Why did you change the database schema?" | Recent agent edit | `ExplainMutation` {target: "schema.ts"} |
+| "Show me the history of this function." | Cursor on `processPayment()` | `ShowProvenance` {target: "processPayment"} |
+| "Never refactor without running tests." | — | `Learn` {preference: "always_run_tests_before_refactor"} |
+
+---
+
+### **L1 — Navigation & Discovery**
+
+| Raw Utterance | Context | Classified Intents |
+|----------------------------------------------------|-----------------------------|--------------------|
+| "Open the main payment service file." | — | `Open` {target: "payment.service.ts"} |
+| "Go to the error on line 142." | Terminal error visible | `GoTo` {destination: "error://terminal#142"} |
+| "Find where user authentication happens." | — | `Locate` {query: "user authentication"} |
+| "Show me all functions that call validateToken." | — | `List` {relation: "calls", target: "validateToken"} |
+| "Search for recent changes to the billing module." | — | `Search` {query: "billing", timeframe: "recent"} |
+
+---
+
+### **L2 — Focus & Attention**
+
+| Raw Utterance | Context | Classified Intents |
+|----------------------------------------|--------------------------|--------------------|
+| "Focus on the user profile component." | — | `Focus` {target: "UserProfile"} |
+| "Highlight all TODOs in this file." | Open file | `Highlight` {target: "current_file", pattern: "TODO"} |
+| "Pin this error so I don't lose it." | — | `Pin` {target: "error://..."} |
+
+---
+
+### **L3 — Information & Understanding**
+
+| Raw Utterance | Context | Classified Intents |
+|------------------------------------------------------------|--------------------------------|--------------------|
+| "Summarize what this function does." | Cursor on function | `Summarize` {target: "current_function", style: "brief"} |
+| "Explain why this test is failing." | Failing test visible | `Explain` {target: "failing_test"} |
+| "Compare the old and new auth logic." | Two versions in memory | `Compare` {targets: ["auth_v1", "auth_v2"]} |
+| "Trace where this error is coming from." | Stack trace visible | `Trace` {target: "error", direction: "upstream"} |
+| "What will happen if I change this timeout to 500ms?" | — | `Predict` {target: "timeout_value", scenario: "change_to_500ms"} |
+
+---
+
+### **L4–L5 — Manipulation & Execution**
+
+| Raw Utterance | Context | Classified Intents |
+|-------------------------------------------------------------|----------------------------------|--------------------|
+| "Rename this variable to userId everywhere." | Cursor on variable | `Edit` {target: "variable", change: "rename_to_userId"} |
+| "Refactor this messy function to be more readable." | On large function | `Refactor` {target: "function", goal: "improve_readability"} |
+| "Delete this unused import." | — | `Delete` {target: "import_statement"} |
+| "Run the test suite for the auth module." | — | `Execute` {target: "auth_tests"} |
+| "Build and run the project." | — | `Build` + `Execute` |
+
+---
+
+### **L6 — Creation & Scaffolding**
+
+| Raw Utterance | Context | Classified Intents |
+|----------------------------------------------------|-----------------------|--------------------|
+| "Create a new React component called UserAvatar." | — | `Create` {type: "react_component", name: "UserAvatar"} |
+| "Scaffold a new Express route for user login." | — | `Scaffold` {type: "express_route", features: ["login"]} |
+| "Generate a migration script for adding email_verified field." | — | `Generate` {targetType: "migration", spec: "..."} |
+
+---
+
+### **L7 — Delegation & Agency**
+
+| Raw Utterance | Context | Classified Intents |
+|--------------------------------------------------------------------|-----------------------------|--------------------|
+| "Migrate the database from Postgres to DynamoDB." | — | `Plan` + `Delegate` {goal: "migrate_db", constraints: ["no_prod_config"]} |
+| "Review this PR and fix any obvious issues." | Open PR | `Delegate` {goal: "review_and_fix_pr"} |
+| "Keep monitoring the build and tell me if it fails." | — | `Monitor` |
+| "Approve the changes from the migration agent." | Agent checkpoint | `Approve` {checkpointId} |
+
+---
+
+### **L8 — Collaboration**
+
+| Raw Utterance | Context | Classified Intents |
+|---------------------------------------------------------|-----------------------------|--------------------|
+| "Share this file with Sarah." | — | `Share` {target: "file", collaborator: "sarah", permissions: "edit"} |
+| "What do you think of this auth logic?" (to peer) | Highlighted code | `Discuss` {target: "auth_block"} |
+| "Add a comment here saying this needs security review." | Cursor position | `Annotate` {target: "code_section", content: "..."} |
+
+---
+
+### **Compound / Complex / Fuzzy Examples** (Interaction Memory)
+
+| Raw Utterance | Context | Classified Intents |
+|--------------------------------------------------------------------|----------------------------------------------|--------------------|
+| "Do the same thing to the previous file." | Last action was refactor on `user.ts` | `Refactor` {target: "previous_file"} |
+| "Fix that bug we were looking at earlier." | Recent error in memory | `DebugAndFix` {target: "previous_error"} |
+| "Make the thing below it twice as big." | Spatial focus on UI designer | `Edit` {target: "element_below", change: "scale_x2"} |
+| "Refactor all of these similar functions." | Multiple similar functions highlighted | `Refactor` {target: "selected_functions", goal: "extract_common_logic"} |
+| "Run tests on everything I changed today." | Interaction Memory has edit history | `Execute` {target: "today's_changes", type: "tests"} |
+
+---
+
+### **Ambiguous / Voice-style Examples**
+
+- "Ugh, this is messy… clean it up." → `Refactor` {target: "current_focus", goal: "clean_code"}
+- "Make it better." → `Refactor` (relies on strong Interaction Memory + focal entity)
+- "That one, no, the other one… yeah that." → `Resolve` via Collaborative Narrowing / Visual Handshake
+- "Just do what we did last time." → `Delegate` + reference to Interaction Memory history
+
+---
+
+**Usage Tips for Intent Router**
+
+Few-shot prompt structure:
+```text
+You are USIR's Intent Router.
+Given the current SemanticSnapshot, InteractionMemory, and user utterance, output structured intents.
+
+Examples:
+{... all above examples ...}
+
+Now classify:
+User: "...."
+Context: ...
+```
+
+Would you like me to:
+1. Expand this to **100+ examples**?
+2. Generate a **JSONL training dataset** format?
+3. Add more **proactive / implicit** examples?
+4. Create **evaluation test cases** with expected vs. tricky utterances?
+
+Let me know how you want to evolve this dataset.  a Yjs-based `FederatedEntityGraph`?
+- Comparison of specific merge strategies for semantic conflicts?
+- Exploration of a custom DAG CRDT for provenance/execution plans?
+
+Let me know how deep you want to go.
+
+
+
+
+
+
+
+
+
+
+
+**Capability Matching Rules**  
+**USIR Universal Intent Ontology v0.1**
+
+This document defines **which adapters can handle which intents**, enabling the **Intent Router** to make smart decisions about routing, degradation, disambiguation, and user feedback.
+
+### Capability Levels
+- **Full** — Adapter can execute the intent reliably and return proper results.
+- **Partial** — Adapter can attempt the intent but with limitations (e.g., needs user confirmation, lower accuracy).
+- **None** — Not supported (router should reject or suggest alternatives).
+
+---
+
+### **Core Adapters & Their Capabilities**
+
+| Intent Layer / Intent              | VS Code / IDE Native | Browser / DOM | OS Accessibility | Zero-Shot VLM | XR / Spatial | IoT / Physical | Notes |
+|------------------------------------|----------------------|---------------|------------------|---------------|--------------|----------------|-------|
+| **L0 Meta** (Confirm, Cancel, Undo, Explain, Help) | Full | Full | Full | Full | Full | Full | Universally supported |
+| **L0.5 Provenance** (ExplainMutation, ShowProvenance) | Full | Partial | Partial | Partial | Partial | None | Strongest in IDEs |
+| **L1 Navigation** (Locate, Open, GoTo, Search, List) | Full | Full | Partial | Full | Full | Partial | Core strength of all adapters |
+| **L2 Focus** (Focus, Highlight, Pin) | Full | Full | Partial | Partial | Full | Partial | Spatial adapters excel here |
+| **L3 Information** (Summarize, Explain, Compare, Trace, Analyze) | Full | Full | Partial | Full | Full | Partial | LLM-heavy; VLM helps with visuals |
+| **L4–L5 Manipulation** (Edit, Refactor, Delete, Execute, RunTest) | Full | Partial | None | Partial | Partial | None | **IDE is king** |
+| **L6 Creation** (Create, Scaffold, Generate) | Full | Partial | None | Partial | Partial | None | Strong code generation in IDE |
+| **L7 Delegation** (Plan, Delegate, Approve, Monitor) | Full | Partial | None | Partial | Partial | None | Requires strong executor + provenance |
+| **L8 Collaboration** (Share, Discuss, Annotate) | Full | Full | Partial | Partial | Full | Partial | Excellent for federation |
+
+---
+
+### **Detailed Adapter Profiles**
+
+#### **1. VS Code / IDE Native Adapter** (Strongest starting point)
+**Best at**: Code-centric workflows  
+**Strength**: Full support for L4–L7 (manipulation, creation, delegation)  
+**Weakness**: Limited physical world awareness
+
+- **Full Support**: Almost everything code-related (Edit, Refactor, Execute, Test, Scaffold, Delegate)
+- **Partial**: Physical/IoT intents
+- **Special Power**: Direct LSP + Extension API access → extremely low latency and high precision
+
+#### **2. Browser / DOM Adapter**
+**Best at**: Web applications, dashboards, design tools  
+**Strength**: Excellent L1–L3 + Collaboration
+
+- **Full**: Navigation, Focus, Information, Collaboration
+- **Partial**: Edit (via DOM mutation), Create (form filling)
+- **None**: Deep code execution, OS-level actions
+- **Technique**: Uses Accessibility Tree + DOM queries + Playwright-style automation
+
+#### **3. OS Accessibility Adapter** (Windows UIA, macOS AX, Linux AT-SPI)
+**Best at**: Legacy desktop apps  
+**Strength**: Broad but shallow coverage
+
+- **Full**: Basic navigation and focus
+- **Partial**: Simple clicks, text reading, basic forms
+- **None**: Complex refactoring or code execution
+- **Limitation**: Very brittle; relies heavily on Zero-Shot VLM fallback
+
+#### **4. Zero-Shot VLM Compiler Adapter**
+**Role**: Universal fallback / legacy app bridge  
+**Usage**: JIT compilation of unknown UIs into semantic hooks
+
+- **Full**: Initial semantic mapping
+- **Partial**: Most manipulation after compilation
+- **None**: Real-time continuous actions (too slow)
+- **Key Rule**: Used for discovery + compilation, then hands off to deterministic hooks
+
+#### **5. XR / Spatial Adapter**
+**Best at**: 3D, ambient, physical-digital fusion
+
+- **Full**: Spatial navigation, focus (gaze), 3D manipulation, collaboration
+- **Strong**: L1, L2, L3, L8
+- **Partial**: Creation & editing of digital twins
+- **Unique**: Raycasting + gesture support for "that one over there"
+
+#### **6. IoT / Physical Device Adapter**
+**Best at**: Real-world control
+
+- **Full**: Simple commands on known devices (lights, thermostats)
+- **Partial**: Complex queries involving physical context
+- **None**: Code manipulation, deep analysis
+
+---
+
+### **Capability Matching Rules (for Intent Router)**
+
+```typescript
+interface AdapterCapability {
+  adapter: string;
+  level: 'Full' | 'Partial' | 'None';
+  confidence: number;        // 0.0 - 1.0
+  requirements?: string[];   // e.g. ["lsp_ready", "a11y_tree_available"]
+}
+
+function getBestAdapter(intent: ClassifiedIntent, snapshot: SemanticSnapshot): AdapterCapability {
+  const candidates = availableAdapters
+    .map(adapter => evaluateCapability(adapter, intent, snapshot))
+    .filter(c => c.level !== 'None')
+    .sort((a, b) => b.confidence - a.confidence);
+
+  return candidates[0];
+}
+```
+
+**Routing Logic Examples**:
+
+- **High-precision code edit** → Prefer **VS Code Native** → fallback to **Zero-Shot**
+- **"Turn that lamp blue"** (with gaze) → **XR + IoT** adapters
+- **"Explain this UI element"** on unknown desktop app → **Zero-Shot VLM**
+- **"Refactor this function"** in browser → Route to **IDE** if linked, else Partial (DOM-level)
+
+---
+
+### **Fallback & Degradation Strategy**
+
+1. **Primary Adapter** fails or is Partial → Try next best adapter
+2. **All adapters None** → Surface Collaborative Narrowing:  
+   *"I can't directly edit legacy apps yet. Would you like me to open it in VS Code, generate a script, or explain the manual steps?"*
+3. **Modality-aware fallback**:
+   - Voice-only device → Prefer audio-friendly adapters
+   - XR → Prioritize spatial adapters
+
+---
+
+### **Adapter Intent Support Summary Table** (Compact)
+
+| Category              | Best Adapter          | Secondary          | Weak / Fallback     |
+|-----------------------|-----------------------|--------------------|---------------------|
+| Code Manipulation     | VS Code Native        | Zero-Shot          | Browser             |
+| Web UI Interaction    | Browser DOM           | Zero-Shot          | Accessibility       |
+| Legacy Desktop        | Zero-Shot + A11y      | Accessibility      | -                   |
+| Spatial / Physical    | XR + IoT              | Zero-Shot          | -                   |
+| Collaboration         | Any (via Federation)  | -                  | -                   |
+| Information / Explain | Any + LLM             | -                  | -                   |
+
+---
+
+Would you like me to expand this further with:
+- JSON schema / TypeScript definitions for the capability registry?
+- More granular per-intent rules (50+ rows)?
+- Decision tree / pseudocode for the Intent Router’s adapter selection?
+- Examples of how the router handles compound intents across multiple adapters?
+
+Let me know the level of detail you need.
+
+
+
+
+
+
+
+
+
+
+
+
+
+

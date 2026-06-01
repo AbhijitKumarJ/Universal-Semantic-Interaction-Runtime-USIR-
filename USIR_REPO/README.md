@@ -1,12 +1,4 @@
-# Universal-Semantic-Interaction-Runtime (USIR)
-USIR - Universal Semantic Interaction Runtime - Towards a Post-GUI Computing Architecture
-
-## USIR Ideation - Ideation FOLDER
-
-Folders are numbered in order of attempts at reining the ideas behind USIR through multiple conversations.
-
-
-## USIR Implementation — USIR_REPO FOLDER
+# USIR — Universal Semantic Interaction Runtime
 
 > A semantic operating layer that decouples human intent from application implementation.
 

@@ -1,0 +1,65 @@
+{
+  "name": "@usir/vscode-extension",
+  "version": "0.1.0",
+  "displayName": "USIR — Universal Semantic Interaction",
+  "description": "Voice-native, intent-driven interface for VS Code. Speak naturally to navigate, edit, and orchestrate your workspace.",
+  "publisher": "usir",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "usir.startListening",
+        "title": "USIR: Start Voice Listening"
+      },
+      {
+        "command": "usir.stopListening",
+        "title": "USIR: Stop Voice Listening"
+      },
+      {
+        "command": "usir.showSnapshot",
+        "title": "USIR: Show Current Semantic Snapshot"
+      },
+      {
+        "command": "usir.showProvenance",
+        "title": "USIR: Show Provenance for Current Entity"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "usir.startListening",
+        "key": "ctrl+shift+space",
+        "mac": "cmd+shift+space",
+        "when": "editorTextFocus"
+      }
+    ]
+  },
+  "scripts": {
+    "build": "tsc -p .",
+    "dev": "tsc -watch -p .",
+    "clean": "rm -rf dist out *.vsix",
+    "test": "echo 'no tests yet'",
+    "lint": "echo 'no lint yet'",
+    "typecheck": "tsc --noEmit",
+    "package": "vsce package"
+  },
+  "dependencies": {
+    "@usir/protocol": "workspace:*",
+    "@usir/runtime": "workspace:*",
+    "@usir/audio-pipeline": "workspace:*",
+    "@usir/vscode-adapter": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3",
+    "@types/vscode": "^1.85.0",
+    "@types/node": "^20.0.0"
+  }
+}
