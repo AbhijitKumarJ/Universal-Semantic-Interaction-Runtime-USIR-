@@ -10,3 +10,8 @@ export { TrustEngine } from './trust-engine';
 export type { TrustEngineConfig } from './trust-engine';
 export { ReputationOracle } from './reputation-oracle';
 export type { OracleConfig } from './reputation-oracle';
+export { UsageTracker } from './usage-tracker';
+export { PricingEngine } from './pricing-engine';
+export { Invoicing } from './invoicing';
+export { MockPaymentProvider } from './payment-provider';
+export type { PaymentProvider, PaymentResult } from './payment-provider';

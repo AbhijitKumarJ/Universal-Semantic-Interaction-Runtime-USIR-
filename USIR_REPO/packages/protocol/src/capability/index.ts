@@ -143,3 +143,4 @@ export function createCapabilityListing(cap: Capability, category: CapabilityCat
 }
 
 export * from './trust-types';
+export * from './pricing-types';

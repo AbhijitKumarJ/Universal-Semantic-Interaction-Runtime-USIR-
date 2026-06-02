@@ -238,13 +238,14 @@
 
 | Task | Status |
 |------|--------|
-| 3a. Define pricing model — per-use, subscription, flat-rate, usage tiers | ⏳ |
-| 3b. Build usage tracking — meter capability invocations per publisher key | ⏳ |
-| 3c. Build pricing engine — compute invoice lines from usage × rate card | ⏳ |
-| 3d. Integrate payment provider (Stripe / Paddle adapter) — checkout, webhooks, refunds | ⏳ |
-| 3e. Build invoicing API — generate, send, list invoices | ⏳ |
-| 3f. Build publisher payout system — aggregate earnings, schedule payouts | ⏳ |
-| 3g. Write tests: usage metering, pricing calculation, invoice generation | ⏳ |
+| 3a. Define pricing data model — `RateCard`, `RateTier`, `UsageRecord`, `UsageAggregate`, `Invoice`, `InvoiceLine`, `Payout`, `CheckoutSession`, `PaymentProviderConfig`, `PaymentMethod` | ✅ |
+| 3b. Build `UsageTracker` — record capability invocations, aggregate by capability/publisher/consumer within periods | ✅ |
+| 3c. Build `PricingEngine` — rate cards (free/per-call/metered-tiered/subscription), compute invoice lines from usage × rate card | ✅ |
+| 3d. Build `PaymentProvider` interface + `MockPaymentProvider` — checkout session creation, payment processing, refunds, payment methods. Hook points for Stripe/PayPal adapters | ✅ |
+| 3e. Build `Invoicing` — generate invoices from usage, send, pay, mark overdue, create checkout sessions | ✅ |
+| 3f. Build publisher payout system — `computePayout()` (aggregate earnings - 10% platform fee), `schedulePayout()`, `processPayout()` | ✅ |
+| 3g. Tests: 5 usage-tracker, 5 pricing-engine, 8 invoicing = 18 tests | ✅ |
+| 3h. Server endpoints: `POST/GET /usage`, `POST/GET /rate-cards`, `POST/GET /invoices`, `POST /invoices/:id/pay`, `POST/GET /checkout`, `POST/GET /payouts`, `POST /payouts/:id/schedule`, `POST /payouts/:id/process` | ✅ |
 
 ### Phase 4: OS-Level Adapter
 
@@ -282,8 +283,8 @@
 | Metric | Value |
 |--------|-------|
 | TypeScript packages | 10 (+ `@usir/federation`, `@usir/registry`, `@usir/registry-client`) |
-| Lines of implementation | ~9,800 (+ ~1,200 in trust engine, oracle, server trust endpoints, TrustMigration update) |
-| Tests | 224 (209 + 15 new trust tests) |
+| Lines of implementation | ~11,500 (+ ~1,700 in pricing engine, usage tracker, invoicing, payment provider, server endpoints) |
+| Tests | 242 (224 + 18 new pricing tests) |
 | Lint errors | 0 |
 | Warnings | 58 (44 pre-existing + 10 registry + 4 client; all `no-explicit-any` / `no-unused-vars`) |
 | CI | Not configured |

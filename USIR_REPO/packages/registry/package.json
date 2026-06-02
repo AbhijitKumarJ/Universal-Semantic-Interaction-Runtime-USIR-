@@ -28,6 +28,22 @@
     "./oracle": {
       "types": "./dist/reputation-oracle.d.ts",
       "import": "./dist/reputation-oracle.js"
+    },
+    "./usage": {
+      "types": "./dist/usage-tracker.d.ts",
+      "import": "./dist/usage-tracker.js"
+    },
+    "./pricing": {
+      "types": "./dist/pricing-engine.d.ts",
+      "import": "./dist/pricing-engine.js"
+    },
+    "./payment": {
+      "types": "./dist/payment-provider.d.ts",
+      "import": "./dist/payment-provider.js"
+    },
+    "./invoicing": {
+      "types": "./dist/invoicing.d.ts",
+      "import": "./dist/invoicing.js"
     }
   },
   "scripts": {
