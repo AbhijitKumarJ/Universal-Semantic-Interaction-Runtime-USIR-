@@ -211,16 +211,16 @@
 
 | Task | Status |
 |------|--------|
-| 1a. Define capability registry data model (schema, categories, versioning, search indexing) | ⏳ |
-| 1b. Scaffold `@usir/registry` package — REST API server (Fastify/Express) for publish/query/delete | ⏳ |
-| 1c. Scaffold `@usir/registry-client` package — client SDK for adapters to register & discover capabilities | ⏳ |
-| 1d. Implement capability CRUD endpoints (POST publish, GET search, GET by ID, DELETE unpublish) | ⏳ |
-| 1e. Implement search / filter (by category, trust level, runtime type, semantic tags) | ⏳ |
-| 1f. Implement capability verification — publisher identity, signature validation, schema conformance | ⏳ |
-| 1g. Build registry sync protocol — periodic refresh, delta updates, offline cache in `@usir/registry-client` | ⏳ |
-| 1h. Integrate capability resolution into `RemoteCapabilityBridge` — query registry for unknown capabilities | ⏳ |
-| 1i. Add registry health / metrics endpoints | ⏳ |
-| 1j. Write integration tests: registry client ↔ server round-trip, search, verification | ⏳ |
+| 1a. Define capability registry data model (schema, categories, versioning, search indexing) | ✅ |
+| 1b. Scaffold `@usir/registry` package — REST API server (Node http, publish/query/delete) | ✅ |
+| 1c. Scaffold `@usir/registry-client` package — client SDK for adapters to register & discover capabilities | ✅ |
+| 1d. Implement capability CRUD endpoints (POST publish, GET search, GET by ID, DELETE unpublish) | ✅ |
+| 1e. Implement search / filter (by category, tags, intent type, trust score, text query, pagination) | ✅ |
+| 1f. Implement capability verification — publisher identity, schema conformance, signature verification | ✅ |
+| 1g. Build registry sync protocol — periodic refresh, delta updates, offline cache in `@usir/registry-client` | ✅ |
+| 1h. Integrate capability resolution into `RemoteCapabilityBridge` — `queryRegistry()` + `setRegistryClient()` | ✅ |
+| 1i. Add registry health / metrics endpoints (`/health`, `/stats`, `/publishers`) | ✅ |
+| 1j. Write integration tests: 39 registry tests (store, verification, server HTTP) + 8 client tests | ✅ |
 
 ### Phase 2: Trust Score System
 
@@ -281,10 +281,10 @@
 
 | Metric | Value |
 |--------|-------|
-| TypeScript packages | 8 (+ `@usir/federation`) |
-| Lines of implementation | ~7,100 (+ ~1,900 in federation) |
-| Tests | 162 (100 pre-existing + 62 federation) |
+| TypeScript packages | 10 (+ `@usir/federation`, `@usir/registry`, `@usir/registry-client`) |
+| Lines of implementation | ~8,600 (+ ~1,500 in registry & registry-client) |
+| Tests | 209 (100 pre-existing + 62 federation + 39 registry + 8 client) |
 | Lint errors | 0 |
-| Warnings | 44 (26 pre-existing + 18 federation; all `no-explicit-any` / `no-unused-vars`) |
+| Warnings | 58 (44 pre-existing + 10 registry + 4 client; all `no-explicit-any` / `no-unused-vars`) |
 | CI | Not configured |
 | Published to npm | None |

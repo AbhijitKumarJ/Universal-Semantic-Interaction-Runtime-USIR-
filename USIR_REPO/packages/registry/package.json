@@ -1,0 +1,40 @@
+{
+  "name": "@usir/registry",
+  "version": "0.1.0",
+  "description": "Public Capability Registry — publish, discover, and verify semantic capabilities",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./server": {
+      "types": "./dist/registry-server.d.ts",
+      "import": "./dist/registry-server.js"
+    },
+    "./store": {
+      "types": "./dist/registry-store.d.ts",
+      "import": "./dist/registry-store.js"
+    },
+    "./verification": {
+      "types": "./dist/verification.d.ts",
+      "import": "./dist/verification.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc -w",
+    "clean": "rm -rf dist",
+    "test": "vitest run",
+    "lint": "eslint src/",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@usir/protocol": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.3.3"
+  }
+}

@@ -1,5 +1,20 @@
 import type { CapabilityPayload } from '../message';
 
+export interface RegistryQueryClient {
+  search(query: { query?: string; status?: string }): Promise<{
+    items: Array<{
+      capability: {
+        capabilityId: string;
+        displayName: string;
+        handlesIntents: string[];
+        provider: { id: string; name: string; trustScore: number };
+        metadata: { version: string; description?: string };
+      };
+    }>;
+    total: number;
+  }>;
+}
+
 export interface ToolDescriptor {
   name: string;
   description: string;
@@ -23,12 +38,18 @@ export interface RemoteCapabilityBridge {
   getRemoteAdaptersForRole(role: string): RemoteAdapterRegistration[];
   listAllRemoteTools(): Array<{ peerId: string; tool: ToolDescriptor }>;
   listAllRemoteAdapters(): RemoteAdapterRegistration[];
+  setRegistryClient(client: RegistryQueryClient): void;
+  queryRegistry(query: string): Promise<{
+    items: Array<{ capability: { capabilityId: string; displayName: string; handlesIntents: string[]; provider: { id: string; name: string; trustScore: number }; metadata: { version: string; description?: string } } }>;
+    total: number;
+  }>;
 }
 
 export function createRemoteCapabilityBridge(): RemoteCapabilityBridge {
   const adapters: Map<string, RemoteAdapterRegistration> = new Map();
   const toolIndex: Map<string, { peerId: string; tool: ToolDescriptor }> = new Map();
   const roleIndex: Map<string, string[]> = new Map();
+  let registryClient: RegistryQueryClient | null = null;
 
   function addToRoleIndex(role: string, adapterKey: string): void {
     if (!roleIndex.has(role)) roleIndex.set(role, []);
@@ -90,6 +111,17 @@ export function createRemoteCapabilityBridge(): RemoteCapabilityBridge {
 
     listAllRemoteAdapters(): RemoteAdapterRegistration[] {
       return Array.from(adapters.values());
+    },
+
+    setRegistryClient(client: RegistryQueryClient): void {
+      registryClient = client;
+    },
+
+    async queryRegistry(query: string) {
+      if (!registryClient) {
+        return { items: [], total: 0 };
+      }
+      return registryClient.search({ query, status: 'active' });
     },
   };
 }

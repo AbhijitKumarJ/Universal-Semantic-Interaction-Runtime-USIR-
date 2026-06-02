@@ -1,51 +1,25 @@
-/**
- * Capability Marketplace — the long-term endgame.
- *
- * Instead of an App Store, USIR envisions a Capability Market where
- * intent handlers are dynamic services discovered, priced, and invoked
- * at runtime. This module defines the discovery + invocation protocol.
- *
- * (This is a forward-looking addition from the USIR Review's "Semantic
- * Economics" section. The MVP doesn't need to implement it, but the
- * types should be defined so the runtime can reason about capabilities.)
- */
-
 import type { BaseIntent, IntentLayer } from '../intents';
 
-/**
- * A capability is a serverless-like handler that can execute a class of intents.
- * Discovery is via the @usir/runtime, invocation is by name + version.
- */
 export interface Capability {
-  /** Globally unique capability id, e.g. "capability://translation/deepl/v1" */
   capabilityId: string;
-  /** Human-readable name (e.g. "DeepL Translation") */
   displayName: string;
-  /** What kinds of intent this capability handles */
   handlesIntents: Array<BaseIntent['type']>;
-  /** Which intent layers it covers (L1-L8) */
   intentLayers: IntentLayer[];
-  /** Provider info */
   provider: {
     id: string;
     name: string;
-    /** Trust score 0-1 based on historical execution success */
     trustScore: number;
   };
-  /** Pricing model */
   pricing: {
     model: 'free' | 'per-call' | 'subscription' | 'metered';
     costPerCall?: number;
     currency?: string;
   };
-  /** Required permissions on the user's semantic graph */
   requiredPermissions: Array<'read' | 'write' | 'delegate' | 'share'>;
-  /** Where to invoke it */
   endpoint: {
     protocol: 'http' | 'grpc' | 'wasm' | 'in-process';
     url?: string;
   };
-  /** Optional capability metadata */
   metadata: {
     version: string;
     description?: string;
@@ -54,12 +28,74 @@ export interface Capability {
   };
 }
 
-/**
- * A capability registry — the runtime's local cache of discovered capabilities.
- */
+export type CapabilityCategory =
+  | 'translation'
+  | 'productivity'
+  | 'communication'
+  | 'development'
+  | 'data'
+  | 'media'
+  | 'automation'
+  | 'iot'
+  | 'xr'
+  | 'system'
+  | 'other';
+
+export interface RegistryMetadata {
+  category: CapabilityCategory;
+  tags: string[];
+  verification?: {
+    method: 'signature' | 'manual_review' | 'automated';
+    status: 'verified' | 'pending' | 'unverified';
+    verifiedAt?: number;
+    verifierId?: string;
+  };
+  publishedAt: number;
+  updatedAt: number;
+}
+
+export type ListingStatus = 'active' | 'deprecated' | 'removed';
+
+export interface CapabilityListing {
+  capability: Capability;
+  registryMetadata: RegistryMetadata;
+  status: ListingStatus;
+}
+
+export interface PublisherIdentity {
+  publisherId: string;
+  name: string;
+  publicKey: string;
+}
+
+export interface RegistrySearchQuery {
+  query?: string;
+  category?: CapabilityCategory;
+  tags?: string[];
+  intentType?: string;
+  minTrustScore?: number;
+  status?: ListingStatus;
+  offset?: number;
+  limit?: number;
+}
+
+export interface RegistrySearchResult {
+  items: CapabilityListing[];
+  total: number;
+  offset: number;
+  limit: number;
+}
+
+export interface RegistryStats {
+  totalCapabilities: number;
+  totalPublishers: number;
+  categories: Record<string, number>;
+  averageTrustScore: number;
+  uptime: number;
+}
+
 export interface CapabilityRegistry {
   capabilities: Map<string, Capability>;
-  /** Index by handled intent type for fast lookup */
   byIntentType: Map<BaseIntent['type'], string[]>;
   lastRefresh: number;
 }
@@ -86,4 +122,22 @@ export function registerCapability(registry: CapabilityRegistry, cap: Capability
 export function findCapabilities(registry: CapabilityRegistry, intentType: BaseIntent['type']): Capability[] {
   const ids = registry.byIntentType.get(intentType) ?? [];
   return ids.map((id) => registry.capabilities.get(id)!).filter(Boolean);
+}
+
+export function createCapabilityListing(cap: Capability, category: CapabilityCategory, tags?: string[]): CapabilityListing {
+  const now = Date.now();
+  return {
+    capability: cap,
+    registryMetadata: {
+      category,
+      tags: tags ?? [],
+      verification: {
+        method: 'automated',
+        status: 'unverified',
+      },
+      publishedAt: now,
+      updatedAt: now,
+    },
+    status: 'active',
+  };
 }
