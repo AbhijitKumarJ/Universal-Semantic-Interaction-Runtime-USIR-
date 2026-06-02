@@ -110,6 +110,19 @@ importers:
         specifier: ^5.3.3
         version: 5.9.3
 
+  packages/federation:
+    dependencies:
+      '@usir/protocol':
+        specifier: workspace:*
+        version: link:../protocol
+    devDependencies:
+      '@types/node':
+        specifier: ^20.0.0
+        version: 20.19.41
+      typescript:
+        specifier: ^5.3.3
+        version: 5.9.3
+
   packages/protocol:
     devDependencies:
       '@types/node':

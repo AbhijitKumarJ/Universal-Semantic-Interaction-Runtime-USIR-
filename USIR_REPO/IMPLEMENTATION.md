@@ -120,22 +120,22 @@
 
 | Task | Status |
 |------|--------|
-| 1a. Scaffold `packages/federation` with package.json, turbo config, tsconfig | ⏳ |
-| 1b. Define `FederationPeer` (identity, capabilities, address, trust level) | ⏳ |
-| 1c. Define `FederationMessage` types (offer, answer, ice, sync, intent, provenance) | ⏳ |
-| 1d. Define `FederationTopology` (star, mesh, hybrid) and peer connection state machine | ⏳ |
-| 1e. Define `FederatedSnapshot` — SemanticGraph diff/merge format for sync | ⏳ |
-| 1f. Define cross-runtime `ProvenanceAnchor` schema (links provenance across runtimes) | ⏳ |
+| 1a. Scaffold `packages/federation` with package.json, turbo config, tsconfig | ✅ |
+| 1b. Define `FederationPeer` (identity, capabilities, address, trust level) | ✅ |
+| 1c. Define `FederationMessage` types (offer, answer, ice, sync, intent, provenance) | ✅ |
+| 1d. Define `FederationTopology` (star, mesh, hybrid) and peer connection state machine | ✅ |
+| 1e. Define `FederatedSnapshot` — SemanticGraph diff/merge format for sync | ✅ |
+| 1f. Define cross-runtime `ProvenanceAnchor` schema (links provenance across runtimes) | ✅ |
 
 ### Phase 2: Transport Layer — WebRTC signaling + data channels
 
 | Task | Status |
 |------|--------|
-| 2a. Build `SignalingServer` class (in-memory MVP) | ⏳ |
-| 2b. Build `PeerConnectionManager` — WebRTC offer/answer/ICE lifecycle | ⏳ |
-| 2c. Build `DataChannelManager` — reliable/unordered channels for sync vs streaming | ⏳ |
-| 2d. Build `FederationTransport` interface (abstraction for WebRTC, later WS/HTTP) | ⏳ |
-| 2e. Handle reconnection, heartbeat (keepalive), graceful disconnect | ⏳ |
+| 2a. Build `SignalingServer` class (in-memory MVP) | ✅ |
+| 2b. Build `PeerConnectionManager` — WebRTC offer/answer/ICE lifecycle | ✅ |
+| 2c. Build `DataChannelManager` — reliable/unordered channels for sync vs streaming | ✅ |
+| 2d. Build `FederationTransport` interface (abstraction for WebRTC, later WS/HTTP) | ✅ |
+| 2e. Handle reconnection, heartbeat (keepalive), graceful disconnect | ✅ |
 
 ### Phase 3: State Synchronization — Federated SemanticGraph with CRDT
 
