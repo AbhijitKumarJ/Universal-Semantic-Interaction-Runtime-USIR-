@@ -1,0 +1,14 @@
+export { SecuritySandbox } from './sandbox';
+export type { PermissionRequest, PermissionStatus, SandboxConfig } from './sandbox';
+export { ProcessAdapter } from './process-adapter';
+export type { ProcessInfo } from './process-adapter';
+export { FileSystemAdapter } from './filesystem-adapter';
+export type { FileEntry } from './filesystem-adapter';
+export { WindowAdapter } from './window-adapter';
+export type { WindowInfo } from './window-adapter';
+export { SystemAdapter } from './system-adapter';
+export type { HostInfo } from './system-adapter';
+export { ShellAdapter } from './shell-adapter';
+export type { ShellResult } from './shell-adapter';
+export { createOsAdapterRegistration } from './factory';
+export type { Tool, OsAdapterRegistration } from './factory';

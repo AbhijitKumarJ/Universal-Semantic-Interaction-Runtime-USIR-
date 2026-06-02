@@ -1,0 +1,49 @@
+{
+  "name": "@usir/adapters-os",
+  "version": "0.1.0",
+  "description": "OS-level adapters — process, filesystem, window, system, and shell control via the Tool interface",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./process": {
+      "types": "./dist/process-adapter.d.ts",
+      "import": "./dist/process-adapter.js"
+    },
+    "./filesystem": {
+      "types": "./dist/filesystem-adapter.d.ts",
+      "import": "./dist/filesystem-adapter.js"
+    },
+    "./window": {
+      "types": "./dist/window-adapter.d.ts",
+      "import": "./dist/window-adapter.js"
+    },
+    "./system": {
+      "types": "./dist/system-adapter.d.ts",
+      "import": "./dist/system-adapter.js"
+    },
+    "./shell": {
+      "types": "./dist/shell-adapter.d.ts",
+      "import": "./dist/shell-adapter.js"
+    },
+    "./sandbox": {
+      "types": "./dist/sandbox.d.ts",
+      "import": "./dist/sandbox.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc -w",
+    "clean": "rm -rf dist",
+    "test": "vitest run",
+    "lint": "eslint src/",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.3.3"
+  }
+}
