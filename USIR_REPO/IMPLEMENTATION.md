@@ -207,13 +207,73 @@
 
 ## Year 3+: Capability Marketplace
 
+### Phase 1: Public Capability Registry
+
 | Task | Status |
 |------|--------|
-| Public capability registry | ⏳ |
-| Trust score system | ⏳ |
-| Pricing / invoicing | ⏳ |
-| OS-level adapter (processes, files, windows) | ⏳ |
-| IoT / XR adapters | ⏳ |
+| 1a. Define capability registry data model (schema, categories, versioning, search indexing) | ⏳ |
+| 1b. Scaffold `@usir/registry` package — REST API server (Fastify/Express) for publish/query/delete | ⏳ |
+| 1c. Scaffold `@usir/registry-client` package — client SDK for adapters to register & discover capabilities | ⏳ |
+| 1d. Implement capability CRUD endpoints (POST publish, GET search, GET by ID, DELETE unpublish) | ⏳ |
+| 1e. Implement search / filter (by category, trust level, runtime type, semantic tags) | ⏳ |
+| 1f. Implement capability verification — publisher identity, signature validation, schema conformance | ⏳ |
+| 1g. Build registry sync protocol — periodic refresh, delta updates, offline cache in `@usir/registry-client` | ⏳ |
+| 1h. Integrate capability resolution into `RemoteCapabilityBridge` — query registry for unknown capabilities | ⏳ |
+| 1i. Add registry health / metrics endpoints | ⏳ |
+| 1j. Write integration tests: registry client ↔ server round-trip, search, verification | ⏳ |
+
+### Phase 2: Trust Score System
+
+| Task | Status |
+|------|--------|
+| 2a. Define trust score data model (score 0–100, weight factors, decay function) | ⏳ |
+| 2b. Build trust scoring engine — weighted factors: uptime, successful verifications, peer reviews, chain depth | ⏳ |
+| 2c. Implement trust decay — reduce scores for stale/offline publishers over configurable half-life | ⏳ |
+| 2d. Build reputation oracle — collect attestations from peer runtimes about capability quality | ⏳ |
+| 2e. Integrate trust scores into `TrustMigration` — minimum score policy, chain-of-trust weighting | ⏳ |
+| 2f. Build trust dashboard — query scores, view breakdown, dispute/resolve | ⏳ |
+| 2g. Write tests: score calculation, decay curve, oracle attestation aggregation | ⏳ |
+
+### Phase 3: Pricing & Invoicing
+
+| Task | Status |
+|------|--------|
+| 3a. Define pricing model — per-use, subscription, flat-rate, usage tiers | ⏳ |
+| 3b. Build usage tracking — meter capability invocations per publisher key | ⏳ |
+| 3c. Build pricing engine — compute invoice lines from usage × rate card | ⏳ |
+| 3d. Integrate payment provider (Stripe / Paddle adapter) — checkout, webhooks, refunds | ⏳ |
+| 3e. Build invoicing API — generate, send, list invoices | ⏳ |
+| 3f. Build publisher payout system — aggregate earnings, schedule payouts | ⏳ |
+| 3g. Write tests: usage metering, pricing calculation, invoice generation | ⏳ |
+
+### Phase 4: OS-Level Adapter
+
+| Task | Status |
+|------|--------|
+| 4a. Scaffold `@usir/adapters-os` package | ⏳ |
+| 4b. Build Process adapter — spawn, list, signal, monitor (CPU/mem), kill processes | ⏳ |
+| 4c. Build File System adapter — read/write, watch, search, metadata, permissions | ⏳ |
+| 4d. Build Window manager adapter — list windows, focus, move/resize, minimize/restore | ⏳ |
+| 4e. Build System adapter — host info, env vars, clipboard, notifications | ⏳ |
+| 4f. Build Shell adapter — execute commands, pipe I/O, stream output | ⏳ |
+| 4g. Ensure all adapters conform to `Tool` interface + capability advertisement schema | ⏳ |
+| 4h. Write security sandbox — permission prompts, path allowlist, command allowlist | ⏳ |
+| 4i. Write tests: process lifecycle, file operations, window queries, shell execution | ⏳ |
+
+### Phase 5: IoT / XR Adapters
+
+| Task | Status |
+|------|--------|
+| 5a. Scaffold `@usir/adapters-iot` package | ⏳ |
+| 5b. Build MQTT adapter — publish, subscribe, bridge topics ↔ SemanticGraph entities | ⏳ |
+| 5c. Build CoAP adapter — discover resources, observe, read/write attributes | ⏳ |
+| 5d. Build Modbus / OPC-UA adapter (industrial IoT) — read registers, write coils, browse tags | ⏳ |
+| 5e. Build Sensor fusion adapter — aggregate telemetry, threshold alerts, time-series queries | ⏳ |
+| 5f. Scaffold `@usir/adapters-xr` package | ⏳ |
+| 5g. Build Unity bridge adapter — send/receive spatial transforms, trigger XR events via NamedPipe/WS | ⏳ |
+| 5h. Build Spatial anchor adapter — persist/query anchors, coordinate system transforms | ⏳ |
+| 5i. Build XR input adapter — map hand/eye/gaze tracking to SemanticGraph entity interactions | ⏳ |
+| 5j. Write tests: MQTT connect/pub/sub, CoAP resource discovery, XR spatial sync | ⏳ |
 
 ---
 
