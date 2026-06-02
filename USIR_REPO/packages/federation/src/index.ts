@@ -9,3 +9,4 @@ export * from './connection';
 export * from './connection/data-channel';
 export * from './graph';
 export * from './discovery';
+export * from './collaboration';

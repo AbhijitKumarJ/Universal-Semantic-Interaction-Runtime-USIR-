@@ -48,6 +48,10 @@
     "./discovery": {
       "types": "./dist/discovery/index.d.ts",
       "import": "./dist/discovery/index.js"
+    },
+    "./collaboration": {
+      "types": "./dist/collaboration/index.d.ts",
+      "import": "./dist/collaboration/index.js"
     }
   },
   "scripts": {

@@ -160,12 +160,12 @@
 
 | Task | Status |
 |------|--------|
-| 5a. Build `ShareHandler` — push entities/snapshots to peers with permission | ⏳ |
-| 5b. Build `DiscussHandler` — multi-peer annotation threads on entities | ⏳ |
-| 5c. Build `AnnotateHandler` — attach L8 annotations to shared entities | ⏳ |
-| 5d. Build `BroadcastHandler` — publish intent to N peers with ttl/scope | ⏳ |
-| 5e. Wire L8 handlers into `TopologicalExecutor` as discoverable tools | ⏳ |
-| 5f. Build multi-peer `InteractionMemory` — resolve conversational refs across peers | ⏳ |
+| 5a. Build `ShareHandler` — push entities/snapshots to peers with permission | ✅ |
+| 5b. Build `DiscussHandler` — multi-peer annotation threads on entities | ✅ |
+| 5c. Build `AnnotateHandler` — attach L8 annotations to shared entities | ✅ |
+| 5d. Build `BroadcastHandler` — publish intent to N peers with ttl/scope | ✅ |
+| 5e. Build `L8ToolRegistry` — wraps handlers as `Tool`-compatible objects for `TopologicalExecutor` | ✅ |
+| 5f. Build `MultiPeerMemory` — resolve conversational references across peers | ✅ |
 
 ### Phase 6: Cross-Runtime Provenance
 
