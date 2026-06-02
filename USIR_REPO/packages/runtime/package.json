@@ -8,8 +8,8 @@
     "build": "tsc",
     "dev": "tsc -w",
     "clean": "rm -rf dist",
-    "test": "echo 'no tests yet'",
-    "lint": "echo 'no lint yet'",
+    "test": "vitest run",
+    "lint": "eslint src/",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

@@ -95,7 +95,7 @@ export class LLMRouter {
     try {
       parsed = JSON.parse(raw);
     } catch (err) {
-      throw new Error(`LLM returned invalid JSON: ${err}`);
+      throw new Error(`LLM returned invalid JSON: ${err}`, { cause: err });
     }
     // Basic validation — real impl would use Zod
     if (!parsed.steps || !Array.isArray(parsed.steps)) {

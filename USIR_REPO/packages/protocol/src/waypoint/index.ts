@@ -9,8 +9,6 @@
  * `<Fallback>` node added per the first review's critique.
  */
 
-import type { CognitiveReference } from '../memory';
-
 export interface InteractionWaypoint {
   id: string;
   context: {

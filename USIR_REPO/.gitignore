@@ -1,12 +1,12 @@
 node_modules/
-# dist/
-# .turbo/
-# out/
-# .vscode-test/
-# *.vsix
-# .DS_Store
+dist/
+.turbo/
+out/
+.vscode-test/
+*.vsix
+.DS_Store
 .env
 .env.local
-# *.log
-# coverage/
-# .tsbuildinfo
+*.log
+coverage/
+.tsbuildinfo

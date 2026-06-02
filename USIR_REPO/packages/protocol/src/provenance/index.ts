@@ -179,7 +179,6 @@ export async function hashEntity(entity: SemanticEntity): Promise<string> {
       .join('');
   }
   // Node.js fallback
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
   const nodeCrypto = await import('node:crypto');
   return nodeCrypto.createHash('sha256').update(json).digest('hex');
 }

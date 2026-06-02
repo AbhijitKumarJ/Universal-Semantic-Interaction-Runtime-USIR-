@@ -10,7 +10,7 @@ import type { BaseIntent, IntentEnvelope } from '@usir/protocol/intents';
 import type { InteractionWaypoint } from '@usir/protocol/waypoint';
 import type { ProvenanceStore } from '../provenance/provenance-store';
 import type { TopologicalExecutor } from '../executor/topological-executor';
-import { TrustClassifier } from './trust-classifier';
+import type { TrustClassifier } from './trust-classifier';
 
 export type Urgency = 'background' | 'checkpoint' | 'blocker';
 

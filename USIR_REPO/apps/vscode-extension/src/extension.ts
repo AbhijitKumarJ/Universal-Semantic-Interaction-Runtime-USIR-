@@ -45,20 +45,18 @@ export async function activate(context: vscode.ExtensionContext) {
       'USIR: No OpenAI API key configured. Set `usir.openaiApiKey` in settings.',
     );
   }
-  llmRouter = new LLMRouter(
-    {
+  llmRouter = new LLMRouter({
+    config: {
       endpoint:
         (config.get('llmEndpoint') as string) ?? 'https://api.openai.com/v1',
       apiKey,
       model: (config.get('llmModel') as string) ?? 'gpt-4o',
       temperature: 0,
     },
-    {
-      getToolRegistryJson: async () => JSON.stringify(toolRegistry.toJSON()),
-      getAvailableEntityIds: async () =>
-        Array.from(snapshotEngine.cold.exportGraph().nodes.keys()),
-    },
-  );
+    getToolRegistryJson: async () => JSON.stringify(toolRegistry.toJSON()),
+    getAvailableEntityIds: async () =>
+      Array.from(snapshotEngine.cold.exportGraph().nodes.keys()),
+  });
 
   // 4. Initialize executor, provenance, memory
   executor = new TopologicalExecutor(toolRegistry);

@@ -46,8 +46,8 @@
     "build": "tsc -p .",
     "dev": "tsc -watch -p .",
     "clean": "rm -rf dist out *.vsix",
-    "test": "echo 'no tests yet'",
-    "lint": "echo 'no lint yet'",
+    "test": "vitest run",
+    "lint": "eslint src/",
     "typecheck": "tsc --noEmit",
     "package": "vsce package"
   },

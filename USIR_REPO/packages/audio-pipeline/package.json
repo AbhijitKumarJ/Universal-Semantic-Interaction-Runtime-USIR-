@@ -8,14 +8,15 @@
     "build": "tsc",
     "dev": "tsc -w",
     "clean": "rm -rf dist",
-    "test": "echo 'no tests yet'",
-    "lint": "echo 'no lint yet'",
+    "test": "vitest run",
+    "lint": "eslint src/",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@usir/protocol": "workspace:*"
   },
   "devDependencies": {
-    "typescript": "^5.3.3"
+    "typescript": "^5.3.3",
+    "@types/node": "^20.0.0"
   }
 }
