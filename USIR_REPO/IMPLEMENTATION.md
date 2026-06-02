@@ -4,6 +4,7 @@
 - ✅ Done
 - 🔜 Next up
 - ⏳ Planned
+- 🛠 In progress
 
 ---
 
@@ -115,12 +116,94 @@
 
 ## Year 2: Federated Runtime
 
+### Phase 1: Federation Protocol — Define `@usir/federation` package
+
 | Task | Status |
 |------|--------|
-| Federated `SemanticGraph` over WebRTC (P2P) | ⏳ |
-| L8 Collaboration Intents (share, discuss, annotate) | ⏳ |
-| Provenance chains across multiple runtimes | ⏳ |
-| `USIR Cloud` hosted runtime | ⏳ |
+| 1a. Scaffold `packages/federation` with package.json, turbo config, tsconfig | ⏳ |
+| 1b. Define `FederationPeer` (identity, capabilities, address, trust level) | ⏳ |
+| 1c. Define `FederationMessage` types (offer, answer, ice, sync, intent, provenance) | ⏳ |
+| 1d. Define `FederationTopology` (star, mesh, hybrid) and peer connection state machine | ⏳ |
+| 1e. Define `FederatedSnapshot` — SemanticGraph diff/merge format for sync | ⏳ |
+| 1f. Define cross-runtime `ProvenanceAnchor` schema (links provenance across runtimes) | ⏳ |
+
+### Phase 2: Transport Layer — WebRTC signaling + data channels
+
+| Task | Status |
+|------|--------|
+| 2a. Build `SignalingServer` class (in-memory MVP) | ⏳ |
+| 2b. Build `PeerConnectionManager` — WebRTC offer/answer/ICE lifecycle | ⏳ |
+| 2c. Build `DataChannelManager` — reliable/unordered channels for sync vs streaming | ⏳ |
+| 2d. Build `FederationTransport` interface (abstraction for WebRTC, later WS/HTTP) | ⏳ |
+| 2e. Handle reconnection, heartbeat (keepalive), graceful disconnect | ⏳ |
+
+### Phase 3: State Synchronization — Federated SemanticGraph with CRDT
+
+| Task | Status |
+|------|--------|
+| 3a. Integrate Yjs CRDT for SemanticGraph node/edge sync | ⏳ |
+| 3b. Build `FederatedGraph` class — wraps Yjs Doc, maps SemanticGraph ↔ Y.Map/Y.Array | ⏳ |
+| 3c. Implement sync protocol — initial snapshot + incremental patches | ⏳ |
+| 3d. Handle merge conflicts (LWW per field, intent-aware reconciliation) | ⏳ |
+| 3e. Build `FederatedSnapshotEngine` — tiered snapshots from federated graph | ⏳ |
+
+### Phase 4: Peer Discovery & Capability Advertisement
+
+| Task | Status |
+|------|--------|
+| 4a. Build `DiscoveryService` — LAN broadcast (mDNS) + signaling server registry | ⏳ |
+| 4b. Build `CapabilityAdvertisement` — broadcast supported roles, tools, intents to peers | ⏳ |
+| 4c. Extend `AdapterCapabilityRegistry` with remote peer capabilities | ⏳ |
+| 4d. Build `PeerDirectory` — unified local + remote peer views | ⏳ |
+
+### Phase 5: L8 Collaboration Intent Handlers
+
+| Task | Status |
+|------|--------|
+| 5a. Build `ShareHandler` — push entities/snapshots to peers with permission | ⏳ |
+| 5b. Build `DiscussHandler` — multi-peer annotation threads on entities | ⏳ |
+| 5c. Build `AnnotateHandler` — attach L8 annotations to shared entities | ⏳ |
+| 5d. Build `BroadcastHandler` — publish intent to N peers with ttl/scope | ⏳ |
+| 5e. Wire L8 handlers into `TopologicalExecutor` as discoverable tools | ⏳ |
+| 5f. Build multi-peer `InteractionMemory` — resolve conversational refs across peers | ⏳ |
+
+### Phase 6: Cross-Runtime Provenance
+
+| Task | Status |
+|------|--------|
+| 6a. Add `remoteProvenanceId` and `runtimeId` fields to `ProvenanceNode` | ⏳ |
+| 6b. Build `ProvenanceBridge` — sync provenance sub-graphs between runtimes | ⏳ |
+| 6c. Build cross-runtime causal chain walker (follow anchors across runtimes) | ⏳ |
+| 6d. Build trust migration protocol — verify and chain approvals across runtimes | ⏳ |
+
+### Phase 7: Federation Runtime — Orchestrator
+
+| Task | Status |
+|------|--------|
+| 7a. Build `FederatedRuntime` class — state machine (idle → connecting → synced → connected) | ⏳ |
+| 7b. Wire into `@usir/runtime` index.ts exports | ⏳ |
+| 7c. Build `FederationConfig` (peer limits, sync throttle, trust policies) | ⏳ |
+| 7d. Add telemetry/events for federation lifecycle | ⏳ |
+
+### Phase 8: Integration & Testing
+
+| Task | Status |
+|------|--------|
+| 8a. Unit tests for federation protocol types and message serialization | ⏳ |
+| 8b. Unit tests for `PeerConnectionManager` (mock RTCPeerConnection) | ⏳ |
+| 8c. Unit tests for `FederatedGraph` CRDT sync | ⏳ |
+| 8d. Integration tests: two in-process `FederatedRuntime`s syncing graph | ⏳ |
+| 8e. Integration tests: L8 intent dispatch across peers | ⏳ |
+| 8f. Typecheck and lint pass on all new code | ⏳ |
+
+### Phase 9: Documentation
+
+| Task | Status |
+|------|--------|
+| 9a. Update `IMPLEMENTATION.md` with detailed federation status | ⏳ |
+| 9b. Add `FEDERATION.md` — architecture, protocol, deployment guide | ⏳ |
+
+---
 
 ## Year 3+: Capability Marketplace
 
