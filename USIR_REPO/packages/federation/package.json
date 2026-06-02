@@ -40,6 +40,10 @@
     "./connection": {
       "types": "./dist/connection/index.d.ts",
       "import": "./dist/connection/index.js"
+    },
+    "./graph": {
+      "types": "./dist/graph/index.d.ts",
+      "import": "./dist/graph/index.js"
     }
   },
   "scripts": {
@@ -51,10 +55,11 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@usir/protocol": "workspace:*"
+    "@usir/protocol": "workspace:*",
+    "yjs": "^13.6.31"
   },
   "devDependencies": {
-    "typescript": "^5.3.3",
-    "@types/node": "^20.0.0"
+    "@types/node": "^20.0.0",
+    "typescript": "^5.3.3"
   }
 }

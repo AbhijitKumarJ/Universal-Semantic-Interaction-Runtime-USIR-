@@ -7,3 +7,4 @@ export * from './transport';
 export * from './signaling';
 export * from './connection';
 export * from './connection/data-channel';
+export * from './graph';

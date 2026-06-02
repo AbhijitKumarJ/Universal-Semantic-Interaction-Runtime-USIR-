@@ -141,11 +141,11 @@
 
 | Task | Status |
 |------|--------|
-| 3a. Integrate Yjs CRDT for SemanticGraph node/edge sync | ⏳ |
-| 3b. Build `FederatedGraph` class — wraps Yjs Doc, maps SemanticGraph ↔ Y.Map/Y.Array | ⏳ |
-| 3c. Implement sync protocol — initial snapshot + incremental patches | ⏳ |
-| 3d. Handle merge conflicts (LWW per field, intent-aware reconciliation) | ⏳ |
-| 3e. Build `FederatedSnapshotEngine` — tiered snapshots from federated graph | ⏳ |
+| 3a. Integrate Yjs CRDT for SemanticGraph node/edge sync | ✅ |
+| 3b. Build `FederatedGraph` class — wraps Yjs Doc, maps SemanticGraph ↔ Y.Map/Y.Array | ✅ |
+| 3c. Implement sync protocol — initial snapshot + incremental patches | ✅ |
+| 3d. Handle merge conflicts (LWW per field, intent-aware reconciliation) | ✅ |
+| 3e. Build `FederatedSnapshotEngine` — tiered snapshots from federated graph | ✅ |
 
 ### Phase 4: Peer Discovery & Capability Advertisement
 
