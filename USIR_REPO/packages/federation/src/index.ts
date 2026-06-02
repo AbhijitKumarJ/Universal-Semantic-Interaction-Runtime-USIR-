@@ -10,3 +10,5 @@ export * from './connection/data-channel';
 export * from './graph';
 export * from './discovery';
 export * from './collaboration';
+export * from './provenance-bridge';
+export * from './runtime';

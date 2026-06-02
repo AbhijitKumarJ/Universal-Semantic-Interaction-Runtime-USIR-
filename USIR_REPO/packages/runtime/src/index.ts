@@ -8,3 +8,5 @@ export * from './disambiguation/adapter-capability-registry';
 export * from './provenance/provenance-store';
 export * from './a2u/trust-classifier';
 export * from './a2u/dispatcher';
+export { createFederationIntegration } from './federation-bridge';
+export type { FederationIntegration } from './federation-bridge';

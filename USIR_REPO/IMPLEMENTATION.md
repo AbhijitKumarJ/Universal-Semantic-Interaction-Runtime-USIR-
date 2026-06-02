@@ -171,19 +171,19 @@
 
 | Task | Status |
 |------|--------|
-| 6a. Add `remoteProvenanceId` and `runtimeId` fields to `ProvenanceNode` | ⏳ |
-| 6b. Build `ProvenanceBridge` — sync provenance sub-graphs between runtimes | ⏳ |
-| 6c. Build cross-runtime causal chain walker (follow anchors across runtimes) | ⏳ |
-| 6d. Build trust migration protocol — verify and chain approvals across runtimes | ⏳ |
+| 6a. Add `remoteProvenanceId`, `runtimeId`, `remoteRuntimeId` fields to `ProvenanceNode` (in `@usir/protocol`) | ✅ |
+| 6b. Build `ProvenanceBridge` — sync provenance sub-graphs between runtimes via `federation.provenance` messages | ✅ |
+| 6c. Build `CrossRuntimeCausalWalker` — follow provenance anchors across runtimes | ✅ |
+| 6d. Build `TrustMigration` — verify trust chains, chain approvals across runtimes | ✅ |
 
 ### Phase 7: Federation Runtime — Orchestrator
 
 | Task | Status |
 |------|--------|
-| 7a. Build `FederatedRuntime` class — state machine (idle → connecting → synced → connected) | ⏳ |
-| 7b. Wire into `@usir/runtime` index.ts exports | ⏳ |
-| 7c. Build `FederationConfig` (peer limits, sync throttle, trust policies) | ⏳ |
-| 7d. Add telemetry/events for federation lifecycle | ⏳ |
+| 7a. Build `FederatedRuntime` class — state machine (idle → starting → connecting → synced → connected → stopping → stopped) | ✅ |
+| 7b. Wire into `@usir/runtime` via `federation-bridge.ts` — registers L8 tools, connects peer events to `AdapterCapabilityRegistry` | ✅ |
+| 7c. Build `FederationRuntimeConfig` + `createDefaultConfig()` (peer limits, sync throttle, trust policies, ICE servers) | ✅ |
+| 7d. Add `FederationLifecycleEvent` system — state changes, peer connect/disconnect, graph updates, intent received, errors | ✅ |
 
 ### Phase 8: Integration & Testing
 

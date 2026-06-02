@@ -52,6 +52,14 @@
     "./collaboration": {
       "types": "./dist/collaboration/index.d.ts",
       "import": "./dist/collaboration/index.js"
+    },
+    "./provenance-bridge": {
+      "types": "./dist/provenance-bridge/index.d.ts",
+      "import": "./dist/provenance-bridge/index.js"
+    },
+    "./runtime": {
+      "types": "./dist/runtime/index.d.ts",
+      "import": "./dist/runtime/index.js"
     }
   },
   "scripts": {

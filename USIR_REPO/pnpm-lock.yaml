@@ -137,6 +137,9 @@ importers:
 
   packages/runtime:
     dependencies:
+      '@usir/federation':
+        specifier: workspace:*
+        version: link:../federation
       '@usir/protocol':
         specifier: workspace:*
         version: link:../protocol

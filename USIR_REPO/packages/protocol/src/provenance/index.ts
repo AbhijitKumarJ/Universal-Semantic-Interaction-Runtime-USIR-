@@ -77,6 +77,12 @@ export interface ProvenanceNode {
   semanticDiff: SemanticDiff;
   /** Optional cryptographic signature for non-repudiation */
   signature?: string;
+  /** The runtime that created this node (for cross-runtime provenance) */
+  runtimeId?: string;
+  /** Corresponding provenance node id in a remote runtime */
+  remoteProvenanceId?: string;
+  /** The remote runtime's identifier */
+  remoteRuntimeId?: string;
 }
 
 export interface SemanticDiff {
