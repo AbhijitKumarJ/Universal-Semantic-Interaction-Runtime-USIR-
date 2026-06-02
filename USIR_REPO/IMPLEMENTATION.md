@@ -200,8 +200,8 @@
 
 | Task | Status |
 |------|--------|
-| 9a. Update `IMPLEMENTATION.md` with detailed federation status | ⏳ |
-| 9b. Add `FEDERATION.md` — architecture, protocol, deployment guide | ⏳ |
+| 9a. Update `IMPLEMENTATION.md` with detailed federation status | ✅ |
+| 9b. Add `FEDERATION.md` — architecture, protocol, deployment guide | ✅ |
 
 ---
 
