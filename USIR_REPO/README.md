@@ -82,7 +82,13 @@ pnpm test
 
 - [Master Specification](docs/MASTER-SPEC.md) — the canonical architecture
 - [12-Month Roadmap](docs/ROADMAP.md) — execution plan
-- [Blog Series: Beyond the GUI](docs/01-the-gui-trap.md) — philosophical foundation
+- [Blog Series: Beyond the GUI (6 parts)](docs/01-the-gui-trap.md) — philosophical foundation
+  - [Part 1: The GUI Trap](docs/01-the-gui-trap.md)
+  - [Part 2: The Universal Protocol](docs/02-the-universal-protocol.md)
+  - [Part 3: The Adapter Layer](docs/03-the-adapter-layer.md)
+  - [Part 4: The Runtime](docs/04-the-runtime.md)
+  - [Part 5: Collaborative Narrowing](docs/05-collaborative-narrowing.md)
+  - [Part 6: Ambient Computing](docs/06-ambient-computing.md)
 - [Blog Series: The Semantic Horizon](docs/semantic-horizon/01-zero-shot-adapter.md) — future expansion
 
 ## Inspiration
