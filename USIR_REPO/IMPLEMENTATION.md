@@ -251,15 +251,15 @@
 
 | Task | Status |
 |------|--------|
-| 4a. Scaffold `@usir/adapters-os` package | ⏳ |
-| 4b. Build Process adapter — spawn, list, signal, monitor (CPU/mem), kill processes | ⏳ |
-| 4c. Build File System adapter — read/write, watch, search, metadata, permissions | ⏳ |
-| 4d. Build Window manager adapter — list windows, focus, move/resize, minimize/restore | ⏳ |
-| 4e. Build System adapter — host info, env vars, clipboard, notifications | ⏳ |
-| 4f. Build Shell adapter — execute commands, pipe I/O, stream output | ⏳ |
-| 4g. Ensure all adapters conform to `Tool` interface + capability advertisement schema | ⏳ |
-| 4h. Write security sandbox — permission prompts, path allowlist, command allowlist | ⏳ |
-| 4i. Write tests: process lifecycle, file operations, window queries, shell execution | ⏳ |
+| 4a. Scaffold `@usir/adapters-os` package | ✅ |
+| 4b. Build Process adapter — spawn, list, signal, monitor (CPU/mem), kill processes | ✅ |
+| 4c. Build File System adapter — read/write, watch, search, metadata, permissions | ✅ |
+| 4d. Build Window manager adapter — list windows, focus, move/resize, minimize/restore | ✅ |
+| 4e. Build System adapter — host info, env vars, clipboard, notifications | ✅ |
+| 4f. Build Shell adapter — execute commands, pipe I/O, stream output | ✅ |
+| 4g. Ensure all adapters conform to `Tool` interface + capability advertisement schema | ✅ |
+| 4h. Write security sandbox — permission prompts, path allowlist, command allowlist | ✅ |
+| 4i. Write tests: process lifecycle, file operations, window queries, shell execution | ✅ |
 
 ### Phase 5: IoT / XR Adapters
 

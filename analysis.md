@@ -1,8 +1,8 @@
 # USIR — Repository Analysis
 
 Repository: Universal-Semantic-Interaction-Runtime (USIR)
-Analysis Date: 2026-06-02
-Maturity: Pre-alpha (Ideation phase complete, implementation skeleton in place)
+Analysis Date: 2026-06-03
+Maturity: Pre-alpha (Phase 1–9 of Year 1–2 complete, Year 3+ Phases 1–5 complete)
 
 ## 1. Project Overview
 
@@ -10,37 +10,49 @@ USIR aims to create a semantic operating layer that decouples human intent from 
 
 The project draws a direct analogy: just as TCP/IP abstracted byte transport and HTML abstracted document presentation, USIR aims to abstract interaction itself.
 
-Status: All core TypeScript types and runtime classes are implemented. The project compiles but has zero tests, zero CI, and has never been run in production. It is a well-architected skeleton awaiting flesh.
+Status: 12 TypeScript packages, ~17,000 lines of implementation, 325 tests, 0 lint errors. The runtime, federated P2P layer, and capability marketplace are fully implemented. The VS Code extension MVP is scaffolded but untested in a real editor.
 
 ## 2. Repository Structure
 
 ```
-USIR_REPO/                     # Primary implementation directory
-├── packages/
-│   ├── protocol/              # @usir/protocol — Shared schemas/ontologies
-│   ├── runtime/               # @usir/runtime — Core execution engine
-│   └── audio-pipeline/        # @usir/audio-pipeline — Voice capture + STT
+USIR_REPO/
+├── packages/                   # Core packages (@usir/*)
+│   ├── protocol/               # Shared schemas, ontologies, entity types
+│   ├── runtime/                # Core engine: memory, router, executor, A2U, provenance
+│   ├── audio-pipeline/         # Voice capture + STT pipeline
+│   ├── federation/             # P2P WebRTC federation, CRDT sync, L8 collaboration
+│   ├── registry/               # Capability marketplace REST API
+│   ├── registry-client/        # Registry client SDK
+│   ├── adapters-os/            # OS-level adapters (process, filesystem, window, shell)
+│   ├── adapters-iot/           # IoT adapters (MQTT, CoAP, Modbus, sensor fusion)
+│   └── adapters-xr/            # XR adapters (Unity bridge, spatial anchors, XR input)
 ├── adapters/
-│   └── vscode/                # @usir/vscode-adapter — VS Code bridge
+│   ├── vscode/                 # VS Code adapter (tiered snapshots + tools)
+│   ├── browser/                # Browser DOM adapter (accessibility tree)
+│   └── playwright/             # Playwright zero-shot adapter
 ├── apps/
-│   └── vscode-extension/      # @usir/vscode-extension — Deployable extension
+│   └── vscode-extension/       # Deployable VS Code extension (MVP)
 ├── docs/
-│   ├── MASTER-SPEC.md         # Canonical architecture spec
-│   ├── ROADMAP.md             # 12-month plan
-│   ├── 01-the-gui-trap.md     # "Beyond the GUI" Part 1: The GUI Trap
+│   ├── MASTER-SPEC.md          # Canonical architecture spec
+│   ├── FEDERATION.md           # P2P federation architecture guide
+│   ├── IMPLEMENTATION.md       # Phase-by-phase status tracker
+│   ├── ROADMAP.md              # 12-month plan
+│   ├── 01-the-gui-trap.md      # "Beyond the GUI" Part 1
 │   ├── 02-the-universal-protocol.md
 │   ├── 03-the-adapter-layer.md
 │   ├── 04-the-runtime.md
 │   ├── 05-collaborative-narrowing.md
-│   ├── 06-ambient-computing.md # (6-part blog series, all written)
-│   └── semantic-horizon/      # "Semantic Horizon" 5-part blog series
+│   ├── 06-ambient-computing.md  # (6-part blog series, all written)
+│   └── semantic-horizon/       # "Semantic Horizon" 5-part blog series
+├── ontology/
+│   └── universal-intent-ontology-v1.md  # 1.0 candidate spec
 ├── examples/
-│   └── bmad-wizard/           # Brainstorming wizard PoC (external)
-├── Ideation/                  # 66-turn conversational design history
-├── pnpm-workspace.yaml        # pnpm monorepo config
-├── turbo.json                 # Turborepo build pipeline
-├── tsconfig.base.json         # Shared TypeScript config (ES2022, strict)
-└── package.json               # Root monorepo config
+│   └── bmad-wizard/            # Brainstorming wizard PoC
+├── Ideation/                   # 66-turn conversational design history
+├── pnpm-workspace.yaml         # pnpm monorepo config
+├── turbo.json                  # Turborepo build pipeline
+├── tsconfig.base.json          # Shared TypeScript config (ES2022, strict)
+└── package.json                # Root monorepo config
 ```
 
 ## 3. Architecture Breakdown
@@ -54,18 +66,20 @@ USIR_REPO/                     # Primary implementation directory
 | 3. Semantic Graph | Typed graph: nodes = entities, edges = relations | packages/protocol/src/graph/ | ✅ With BFS traversal, role/source indices |
 | 4. Semantic Snapshot | 3-tier snapshot emitted by every adapter | packages/protocol/src/snapshot/ | ✅ Hot/Warm/Cold fully typed |
 | 5. Deterministic Execution | LLM plans; runtime executes (DAG of steps) | packages/runtime/src/executor/ + router/ | ✅ TopologicalExecutor, LLMRouter, prompts |
-| 6. Semantic Adapters | Bridge existing software to USIR | adapters/vscode/ | ✅ VS Code adapter with 7 tools |
+| 6. Semantic Adapters | Bridge existing software to USIR | adapters/ + packages/adapters-*/ | ✅ 9 adapter packages (VS Code, browser, Playwright, OS, IoT, XR) |
 
 ### 3.2 L0.5 Provenance Layer
 
-A key innovation from the project's review process. Tracks why mutations happened, not just what changed. Every provenance node records:
+A key innovation. Tracks why mutations happened, not just what changed. Every provenance node records:
 - The intent + actor (user/agent/system)
 - The rationale (user-requested / delegated / inferred)
 - The authorization chain (approved / delegated / pending / rejected)
 - Causal parents + content hashes (SHA-256) for replay
 - Semantic diffs (field-level, not text diffs)
 
-Files: `packages/protocol/src/provenance/index.ts`, `packages/runtime/src/provenance/provenance-store.ts`
+Cross-runtime variant: `ProvenanceBridge` syncs provenance sub-graphs between runtimes via `federation.provenance` messages. `CrossRuntimeCausalWalker` follows provenance anchors across runtimes.
+
+Files: `packages/protocol/src/provenance/`, `packages/runtime/src/provenance/`, `packages/federation/src/provenance-bridge/`
 
 ### 3.3 A2U (Agent-to-USIR) Protocol
 
@@ -73,9 +87,41 @@ A trust-based gate that keeps humans in control of autonomous agents via 3 trust
 
 Files: `packages/runtime/src/a2u/`
 
+### 3.4 Federated Runtime
+
+P2P runtime federation enabling multi-runtime collaboration:
+- **WebRTC** signaling + data channels (`PeerConnectionManager`, `DataChannelManager`)
+- **Yjs CRDT** for conflict-free SemanticGraph sync (`FederatedGraph`)
+- **L8 Collaboration** handlers: Share, Discuss, Annotate, Broadcast
+- **Discovery**: `DiscoveryService` (signaling + presence broadcast), `CapabilityAdvertisement`, `PeerDirectory`
+- **FederatedRuntime** state machine: idle → starting → connecting → synced → connected
+
+Files: `packages/federation/` (~4,760 LOC, 62 tests)
+
+### 3.5 Capability Marketplace
+
+Public registry for publishing, discovering, and monetizing capabilities:
+- **Registry**: CRUD REST API, search/filter/pagination, publisher identity verification, signature verification
+- **Trust**: Weighted factor scoring (base/verification/attestation/uptime/recency) with exponential half-life decay
+- **Pricing**: Rate cards (free/per-call/metered-tiered/subscription), usage tracking, invoicing, payout system
+- **Registry Client**: HTTP client, local cache with staleness tracking, periodic sync protocol
+
+Files: `packages/registry/`, `packages/registry-client/` (~2,880 LOC, 80 tests)
+
+### 3.6 Adapter Ecosystem
+
+| Adapter | Package | Tools | Tests |
+|---------|---------|-------|-------|
+| VS Code | `@usir/vscode-adapter` | 9 (openEntity, focusRegion, editEntity, etc.) | 0 |
+| Browser DOM | `@usir/browser-adapter` | 7 (navigate, click, extract, screenshot, etc.) | 0 |
+| Playwright | `@usir/playwright-adapter` | 8 (navigate, click, type, extract, screenshot, etc.) | 7 |
+| OS | `@usir/adapters-os` | 20+ (process, fs, window, shell, system) | 30 |
+| IoT | `@usir/adapters-iot` | 25+ (MQTT pub/sub, CoAP, Modbus, sensor fusion) | 33 |
+| XR | `@usir/adapters-xr` | 15 (Unity bridge, spatial anchors, XR input) | 20 |
+
 ## 4. Package Deep Dive
 
-### 4.1 @usir/protocol — The Shared Language
+### 4.1 @usir/protocol — The Shared Language (~2,000 LOC, 41 tests)
 
 Zero runtime dependencies. Pure TypeScript type definitions and helpers.
 
@@ -88,11 +134,11 @@ Zero runtime dependencies. Pure TypeScript type definitions and helpers.
 | memory/ | CognitiveReference (temporal/conversational/spatial/semantic) |
 | waypoint/ | InteractionWaypoint — multi-modal presentation primitive (display/audio/spatial/haptic/XR) with fallback chains |
 | provenance/ | ProvenanceNode, ProvenanceGraph, causal chain walker, SHA-256 entity hashing |
-| capability/ | Forward-looking capability marketplace schemas (not yet used) |
+| capability/ | Registry, trust, and pricing data models for the capability marketplace |
 
 Notable: The Waypoint type is unusually thorough — it specifies not just display and audio, but also XR holographic buttons, haptic patterns, dial/watch inputs, and a 5-channel fallback chain (SMS, email, push, USB, QR, voice call).
 
-### 4.2 @usir/runtime — The Brain
+### 4.2 @usir/runtime — The Brain (~1,880 LOC, 42 tests)
 
 | Module | Purpose |
 |--------|---------|
@@ -108,7 +154,7 @@ Notable: The Waypoint type is unusually thorough — it specifies not just displ
 
 Architectural insight: The LLM Router is the only component that calls an LLM. Everything else is deterministic TypeScript. This is a deliberate safety boundary.
 
-### 4.3 @usir/audio-pipeline — Voice Input
+### 4.3 @usir/audio-pipeline — Voice Input (~480 LOC, 10 tests)
 
 | Module | Purpose |
 |--------|---------|
@@ -117,7 +163,53 @@ Architectural insight: The LLM Router is the only component that calls an LLM. E
 | audio-capture | Web Audio API → VAD → STT pipeline; 16kHz, Float32→16-bit PCM conversion |
 | fused-intent | PointingTarget + ImplicitSignals (typing cadence, gaze, affective markers) + linguistic input |
 
-### 4.4 @usir/vscode-adapter — VS Code Bridge
+### 4.4 @usir/federation — P2P Runtime Federation (~4,760 LOC, 62 tests)
+
+| Module | Purpose |
+|--------|---------|
+| peers/ | FederationPeer, FederationMessage types, topology, peer connection FSM |
+| transport/ | SignalingServer, PeerConnectionManager (WebRTC), DataChannelManager, FederationTransport interface |
+| sync/ | FederatedGraph (Yjs CRDT wrapper), sync protocol, merge reconciliation |
+| discovery/ | DiscoveryService, CapabilityAdvertisement, RemoteCapabilityBridge, PeerDirectory |
+| collaboration/ | ShareHandler, DiscussHandler, AnnotateHandler, BroadcastHandler, L8ToolRegistry, MultiPeerMemory |
+| provenance-bridge/ | ProvenanceBridge, CrossRuntimeCausalWalker, TrustMigration |
+| federation-runtime/ | FederatedRuntime state machine, bridge integration, config, lifecycle events |
+
+### 4.5 @usir/registry — Capability Marketplace API (~2,440 LOC, 72 tests)
+
+| Module | Purpose |
+|--------|---------|
+| registry-store/ | In-memory CRUD with category/tag/intent indexes, text search, pagination |
+| registry-server/ | Node http server: POST/GET/DELETE /capabilities, /health, /stats, /publishers |
+| verification/ | Schema conformance, publisher identity, signature verification |
+| trust-engine/ | Weighted factor scoring with configurable weights and exponential half-life decay |
+| reputation-oracle/ | Attestation submission, expiry, aggregation, pruning |
+| usage-tracker/ | Record capability invocations, aggregate by period |
+| pricing-engine/ | Rate cards: free, per-call, metered-tiered, subscription |
+| invoicing/ | Invoice generation, payment processing, checkout sessions, payouts, overdue tracking |
+| payment-provider/ | PaymentProvider interface + MockPaymentProvider |
+
+### 4.6 @usir/registry-client — Client SDK (~440 LOC, 8 tests)
+
+| Module | Purpose |
+|--------|---------|
+| registry-client/ | HTTP client for all registry endpoints |
+| local-capability-cache/ | In-memory cache with staleness tracking |
+| sync-protocol/ | Periodic refresh with configurable interval |
+
+### 4.7 @usir/adapters-os — OS Adapters (~990 LOC, 30 tests)
+
+Process (spawn/list/signal/monitor/kill), FileSystem (read/write/list/stat/search), Window (list/focus/resize/minimize/restore), Shell (exec + pipe), System (host info, env, clipboard, notifications). SecuritySandbox: path allowlists, command denylist, permission cache, grant/deny/reset.
+
+### 4.8 @usir/adapters-iot — IoT Adapters (~1,080 LOC, 33 tests)
+
+MQTT (connect/pub/sub/unsub/listMessages/bridgeTopic + wildcard matching), CoAP (discover/GET/PUT/POST/DELETE/observe), Modbus/OPC-UA (coils, registers, tag browsing), Sensor Fusion (ingest/query/aggregate/threshold alerts).
+
+### 4.9 @usir/adapters-xr — XR Adapters (~710 LOC, 20 tests)
+
+Unity Bridge (connect/disconnect/sendTransform/receiveTransforms/triggerEvent/pollEvents), Spatial Anchors (create/query/delete/transformBetween), XR Input (handTracking/eyeGaze/pollInteractions/mapEntity/unmapEntity).
+
+### 4.10 @usir/vscode-adapter — VS Code Bridge (~560 LOC)
 
 | Module | Purpose |
 |--------|---------|
@@ -128,7 +220,7 @@ Architectural insight: The LLM Router is the only component that calls an LLM. E
 | registry/tool-registry | Re-exports ToolRegistry from runtime |
 | registry/vscode-tools | 7 tools: openEntity, focusRegion, editEntity, executeCommand, runTests, runInTerminal, search, locateSymbol, applyRefactor |
 
-### 4.5 @usir/vscode-extension — The MVP App
+### 4.11 @usir/vscode-extension — The MVP App
 
 - Activation hooks all 6 subsystems together
 - Registers 4 commands: start/stop/listening, showSnapshot, showProvenance
@@ -146,18 +238,11 @@ Architectural insight: The LLM Router is the only component that calls an LLM. E
 `docs/02-the-universal-protocol.md` through `06-ambient-computing.md` — All fully written with substantive content (~6-9KB each).
 
 **"Semantic Horizon" (5 parts, all written)**
-Forward-looking expansions:
-- Zero-Shot Adapter (VLM as compiler for apps without semantic APIs)
-- Ambient Sensorium (audio, gaze, biometrics as input surfaces)
-- Proactive Computing (runtime anticipates intent)
-- Agentic Delegation (trust protocols, sandboxes, checkpoints)
-- Federated Semantic Web (P2P runtime federation)
+Forward-looking expansions: Zero-Shot Adapter (VLM as compiler), Ambient Sensorium (audio, gaze, biometrics), Proactive Computing (runtime anticipates intent), Agentic Delegation (trust protocols), Federated Semantic Web (P2P).
 
-**MASTER-SPEC.md**
-The canonical spec — 250 lines covering all 6 pillars, L0.5 provenance, A2U protocol, capability marketplace, and MVP scope.
+**MASTER-SPEC.md** — The canonical spec covering all 6 pillars, L0.5 provenance, A2U protocol, capability marketplace, and MVP scope.
 
-**ROADMAP.md**
-12-month plan with explicit caveat: "This timeline is optimistic." All Phase 1–5 tasks are marked [x] (completed). Phase 6 (browser adapter, public alpha) is open. Year 2–3 are speculative.
+**FEDERATION.md** — Comprehensive architecture, protocol, and deployment guide for the P2P federated runtime.
 
 ## 6. Code Quality Assessment
 
@@ -168,72 +253,80 @@ The canonical spec — 250 lines covering all 6 pillars, L0.5 provenance, A2U pr
 3. **Multi-modal from day one** — Waypoints carry display, audio (TTS + SSML), spatial (XR), haptic, gesture, dial, and 5 fallback channels.
 4. **Monorepo hygiene** — Turborepo, pnpm workspaces, strict TypeScript, ES2022 target, clean module boundaries.
 5. **Philosophical grounding** — The GUI Trap essay and MASTER-SPEC are well-written and make a compelling case.
+6. **Comprehensive test coverage** — 325 tests across 10 packages with 0 lint errors. The federation package alone has 62 tests covering WebRTC lifecycle, CRDT sync, collaboration handlers, and provenance bridges.
+7. **Incremental git history** — 20+ commits with clear phase boundaries (Year 1 Foundation → Year 2 Federation → Year 3+ Marketplace).
 
 ### Weaknesses
 
-1. **Zero tests** — Every package has `"test": "echo 'no tests yet'"`. No unit, integration, or E2E tests. This is the single biggest risk.
-2. **No CI/CD** — No GitHub Actions, no linting pipeline, no build verification beyond local `tsc`.
-3. **No package publication** — No npm publishing config. The protocol package should be published early for community feedback per the roadmap.
-4. **VS Code extension untested** — The activation pipeline (extension.ts) wires real subsystems together but has never been run in a VS Code instance. The audio pipeline depends on Web Audio API (renderer process) — may not work in VS Code's extension host.
-6. **No local Whisper fallback** — The MVP depends entirely on Groq's API. No offline mode.
-7. **No error recovery strategy** — The TopologicalExecutor aborts on first failure (non-optional steps). No retry, no circuit breaker, no graceful degradation.
-8. **Interaction Memory is single-user** — InteractionMemory takes a userId but there's no multi-user or session persistence beyond in-memory.
+1. **No CI/CD** — No GitHub Actions, no automated lint/test/build verification on push.
+2. **No package publication** — No npm publishing config. The protocol package should be published early for community feedback.
+3. **VS Code extension untested** — The activation pipeline (extension.ts) wires real subsystems together but has never been run in a VS Code instance. The audio pipeline depends on Web Audio API (renderer process) — may not work in VS Code's extension host.
+4. **No local Whisper fallback** — The MVP depends entirely on Groq's API. No offline mode.
+5. **No error recovery strategy** — The TopologicalExecutor aborts on first failure (non-optional steps). No retry, no circuit breaker, no graceful degradation.
+6. **Interaction Memory is single-user** — InteractionMemory takes a userId but there's no multi-user or session persistence beyond in-memory.
+7. **Browser adapter tests missing** — `@usir/browser-adapter` and `@usir/vscode-adapter` have zero tests.
 
 ### Notable Missing Features (Relative to Roadmap)
 
-- Browser adapter — Planned for Month 11–12, not started
-- Zero-shot adapter — VLM-based fallback, documented in semantic-horizon, not implemented
-- Federated runtime — Year 2, deferred
-- Capability marketplace — Year 3+, types defined, not implemented
-- Community RFC process — Planned for Month 11, not started
+- CI/CD pipeline — Not configured
+- npm publication — Not started
+- Local Whisper.cpp fallback — Documented, not implemented
+- Retry logic in executor — Planned, not implemented
+- Interaction memory persistence — Planned, not implemented
+- Multi-user/multi-session support — Not started
 
 ## 7. Line of Code Summary
 
 | Directory | Files | Approx. LOC | Description |
 |-----------|-------|-------------|-------------|
-| packages/protocol/src/ | 10 | ~1,100 | Shared types, helpers |
-| packages/runtime/src/ | 9 | ~1,100 | Router, executor, memory, provenance, A2U |
-| packages/audio-pipeline/src/ | 5 | ~400 | VAD, STT, capture, fused intent |
-| adapters/vscode/src/ | 7 | ~600 | Snapshot tiers, tools |
-| apps/vscode-extension/src/ | 1 | ~425 | Extension entry point |
-| docs/ | ~12 | ~5,500 | Spec, roadmap, essays |
+| packages/protocol/src/ | 10+ | ~2,000 | Shared types, helpers |
+| packages/runtime/src/ | 9 | ~1,880 | Router, executor, memory, provenance, A2U |
+| packages/audio-pipeline/src/ | 5 | ~480 | VAD, STT, capture, fused intent |
+| packages/federation/src/ | 30+ | ~4,760 | P2P WebRTC, CRDT, L8, provenance bridge |
+| packages/registry/src/ | 10 | ~2,440 | REST API, trust, pricing, invoicing |
+| packages/registry-client/src/ | 3 | ~440 | Client SDK, cache, sync |
+| packages/adapters-os/src/ | 10 | ~990 | Process, fs, window, shell, system |
+| packages/adapters-iot/src/ | 8 | ~1,080 | MQTT, CoAP, Modbus, sensor fusion |
+| packages/adapters-xr/src/ | 7 | ~710 | Unity bridge, anchors, XR input |
+| adapters/vscode/src/ | 7 | ~560 | Snapshot tiers, tools |
+| adapters/browser/src/ | 5 | ~490 | DOM adapter, tools |
+| adapters/playwright/src/ | 5 | ~470 | DOM extractor, snapshot engine, tools |
+| apps/vscode-extension/src/ | 1 | ~420 | Extension entry point |
+| **Total (implementation)** | **~100** | **~16,700** | TypeScript source |
+| docs/ + ontology/ | ~15 | ~3,800 | Spec, roadmap, essays |
 | Ideation/ | ~70 | ~50,000+ | Conversational design history |
-| **Total (implementation)** | **32** | **~3,600** | TypeScript source |
-| **Total (documentation)** | **82** | **~55,000+** | Design docs + ideation |
-
-The signal-to-noise ratio is unusual: ~55K words of design documentation vs ~3.6K lines of executable code. The ideation folder alone is ~50K lines of conversational LLM output, which is valuable for traceability but inflates the project footprint.
 
 ## 8. Git History
 
-- Single commit: the entire codebase appears to have been added in one shot
-- Minimal `.gitignore` — doesn't exclude `dist/`, `node_modules/`
-- No branches, tags, or PR history
+- 20+ commits with clear phase structure: Foundation → Audio → VS Code Extension → Browser Adapter → Federated Runtime (Phases 1–9) → Capability Marketplace (Phases 1–5)
+- Phase boundaries are clearly delineated in commit messages
+- Single-branch development (no feature branches)
+- `IMPLEMENTATION.md` tracks phase-by-phase status
 
 ## 9. Risks & Recommendations
 
 ### Critical
 
-1. **Write tests immediately** — Every `echo 'no tests yet'` is a ticking time bomb. Start with protocol type validation, then runtime unit tests, then integration tests.
-2. **Set up CI** — GitHub Actions with `pnpm install && pnpm typecheck && pnpm test` as a bare minimum.
-3. **Publish @usir/protocol** — Even as a 0.1.0-alpha, getting the schemas in front of the community is worth more than polish.
+1. **Set up CI** — GitHub Actions with `pnpm install && pnpm typecheck && pnpm -r lint && pnpm -r test` as a bare minimum. 325 existing tests provide meaningful regression protection.
+2. **Publish @usir/protocol** — Even as a 0.1.0-alpha, getting the schemas in front of the community is worth more than polish.
+3. **Add tests for browser and VS Code adapters** — These are the primary adapters for the MVP and have zero test coverage.
 
 ### High
 
-4. **Surface the blog series** — All 6 parts are written but only Part 1 is linked from the README. Add links to parts 2–6 to improve discoverability.
-5. **Add a local Whisper.cpp fallback** — The MVP is non-functional offline. This is a hard blocker for developer adoption.
-6. **Test the VS Code extension activation** — The Web Audio API dependency may fail in the VS Code extension host (it runs in an extension host process, not a browser renderer). Verify before the next milestone.
+4. **Surface the blog series** — All 6 parts are written but only Part 1 is linked from the root README. Add links to parts 2–6.
+5. **Add a local Whisper.cpp fallback** — The MVP is non-functional offline. Hard blocker for developer adoption.
+6. **Test the VS Code extension activation** — The Web Audio API dependency may fail in the VS Code extension host process.
 
 ### Medium
 
-7. **Add retry logic to the executor** — At minimum, a configurable number of retries for transient failures.
+7. **Add retry logic to the executor** — Configurable retries for transient failures.
 8. **Persist interaction memory** — SQLite or simple JSON file per session.
 9. **Set up npm packaging config** — publishConfig, files whitelist, README for each package.
-10. **Improve .gitignore** — Add `dist/`, `node_modules/`, `*.vsix`, `.turbo/`.
 
 ## 10. Final Verdict
 
-USIR is an exceptionally well-designed architecture with a compelling thesis and a concrete MVP strategy (VS Code extension as Trojan horse). The type system is thoughtful, the provenance layer is genuinely innovative, and the A2U trust protocol shows real understanding of agent safety challenges.
+USIR is an exceptionally well-designed architecture with a compelling thesis, a concrete MVP strategy (VS Code extension as Trojan horse), and substantial implementation progress. The type system is thoughtful, the provenance layer is genuinely innovative, and the A2U trust protocol shows real understanding of agent safety challenges.
 
-However, it is currently a blueprint with a skeleton — 3,600 lines of TypeScript, zero tests, zero CI, zero runtime validation. The next logical step is to tighten the feedback loop: write tests, set up CI, and get the VS Code extension running in an actual editor. The architecture deserves execution.
+The project has grown from a 3,600-line skeleton to a ~16,700-line implementation covering the core runtime, federated P2P layer, capability marketplace, and 6 adapter ecosystems. 325 tests provide meaningful coverage with 0 lint errors.
 
-The ratio of design docs (~55K words) to working code (~3.6K lines) suggests the project may benefit from a focused "ship the MVP" phase — stop designing, start testing and running.
+The next logical steps are: CI/CD pipeline, npm publication for community feedback, testing the VS Code extension in a real editor, and expanding adapter coverage (browser tests, error recovery, offline Whisper fallback). The architecture deserves execution — and it now has enough implementation mass to attract real contributors.
