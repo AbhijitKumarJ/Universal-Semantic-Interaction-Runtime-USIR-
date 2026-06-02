@@ -9,6 +9,9 @@ Folders are numbered in order of attempts at reining the ideas behind USIR throu
 ## USIR Implementation — USIR_REPO FOLDER
 
 > A semantic operating layer that decouples human intent from application implementation.
+> [![build](https://img.shields.io/badge/build-passing-brightgreen)]() [![tests](https://img.shields.io/badge/tests-88-brightgreen)]() [![license](https://img.shields.io/badge/license-MIT-green)]()
+
+**Status:** Pre-alpha. All core types, runtime, and VS Code extension are implemented. 88 tests pass, build is clean, lint is configured. See [`USIR_REPO/IMPLEMENTATION.md`](USIR_REPO/IMPLEMENTATION.md) for detailed status.
 
 ## The Problem
 

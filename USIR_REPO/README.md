@@ -47,8 +47,11 @@ usir/
 ├── docs/
 │   ├── MASTER-SPEC.md     # Canonical architecture spec
 │   ├── ROADMAP.md         # 12-month execution plan
-│   ├── *.md               # "Beyond the GUI" 6-part blog series
+│   ├── 01-the-gui-trap.md # "Beyond the GUI" 6-part blog series (all written)
+│   ├── ...
 │   └── semantic-horizon/  # "Semantic Horizon" 5-part blog series
+├── TechStack.md           # Technology stack reference
+├── IMPLEMENTATION.md      # Implementation status & next steps
 └── examples/
     └── bmad-wizard/       # BMAD brainstorming wizard PoC
 ```
@@ -73,15 +76,25 @@ pnpm build
 
 # Run the VS Code extension in dev mode
 pnpm --filter @usir/vscode-extension run dev
-
-# Run tests
-pnpm test
 ```
+
+### Available commands
+
+| Command | Description |
+|---------|-------------|
+| `pnpm build` | Compile all packages |
+| `pnpm typecheck` | Type-check all packages (no emit) |
+| `pnpm lint` | Lint all packages (ESLint + typescript-eslint) |
+| `pnpm test` | Run all tests (Vitest, 88 tests) |
+| `pnpm clean` | Remove all build artifacts |
+| `pnpm dev` | Watch mode for all packages |
 
 ## Documentation
 
 - [Master Specification](docs/MASTER-SPEC.md) — the canonical architecture
 - [12-Month Roadmap](docs/ROADMAP.md) — execution plan
+- [Implementation Status](IMPLEMENTATION.md) — what's done and what's next
+- [Tech Stack](TechStack.md) — languages, tools, versions
 - [Blog Series: Beyond the GUI (6 parts)](docs/01-the-gui-trap.md) — philosophical foundation
   - [Part 1: The GUI Trap](docs/01-the-gui-trap.md)
   - [Part 2: The Universal Protocol](docs/02-the-universal-protocol.md)
@@ -104,7 +117,13 @@ USIR draws from the historical analogy of protocol layers:
 
 ## Status
 
-🚧 **Pre-alpha** — Core schemas and MVP being built. The semantic runtime, ontology, and VS Code adapter are the focus of the first 6 months.
+[![build](https://img.shields.io/badge/build-passing-brightgreen)]()
+[![tests](https://img.shields.io/badge/tests-88-brightgreen)]()
+[![lint](https://img.shields.io/badge/lint-passing-brightgreen)]()
+[![typescript](https://img.shields.io/badge/TypeScript-5.9-blue)]()
+[![license](https://img.shields.io/badge/license-MIT-green)]()
+
+🚧 **Pre-alpha** — All core types, runtime classes, and VS Code extension are implemented. Build is clean, 88 tests pass, lint is configured. Next up: CI/CD pipeline, publish `@usir/protocol` to npm, and test the extension in a live VS Code instance.
 
 ## License
 
