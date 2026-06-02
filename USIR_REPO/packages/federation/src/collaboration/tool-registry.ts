@@ -1,8 +1,8 @@
 import type { ShareIntent, DiscussIntent, AnnotateIntent, BroadcastIntent } from '@usir/protocol/intents';
-import { ShareHandler } from './share-handler';
-import { DiscussHandler } from './discuss-handler';
-import { AnnotateHandler } from './annotate-handler';
-import { BroadcastHandler } from './broadcast-handler';
+import type { ShareHandler } from './share-handler';
+import type { DiscussHandler } from './discuss-handler';
+import type { AnnotateHandler } from './annotate-handler';
+import type { BroadcastHandler } from './broadcast-handler';
 
 export interface L8Tool {
   name: string;
