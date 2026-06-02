@@ -4,6 +4,7 @@ export * from './router/llm-router';
 export * from './router/prompts';
 export * from './executor/topological-executor';
 export * from './disambiguation/collaborative-narrowing';
+export * from './disambiguation/adapter-capability-registry';
 export * from './provenance/provenance-store';
 export * from './a2u/trust-classifier';
 export * from './a2u/dispatcher';

@@ -41,7 +41,9 @@ usir/
 │   ├── runtime/           # Interaction Memory, Intent Router, Topological Executor
 │   └── audio-pipeline/    # Whisper STT, VAD, FusedIntent
 ├── adapters/
-│   └── vscode/            # VS Code adapter (Hot/Warm/Cold tiered snapshots)
+│   ├── vscode/            # VS Code adapter (Hot/Warm/Cold tiered snapshots)
+│   ├── browser/           # Browser in-process adapter (DOM → SemanticEntity, 7 tools)
+│   └── playwright/        # Playwright zero-shot adapter (headless browser automation, 8 tools)
 ├── apps/
 │   └── vscode-extension/  # The deployable VS Code extension (MVP entry point)
 ├── docs/

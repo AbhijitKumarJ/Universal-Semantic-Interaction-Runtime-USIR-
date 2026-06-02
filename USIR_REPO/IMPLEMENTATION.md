@@ -84,12 +84,12 @@
 
 | Task | Status | Notes |
 |------|--------|-------|
-| Build `@usir/browser-adapter` (DOM Accessibility Tree) | ⏳ | Phase 6 milestone |
-| Build Playwright-based zero-shot adapter prototype | ⏳ | VLM fallback for apps without semantic APIs |
-| Add Capability Registry — discover tools across adapters | ⏳ | |
+| Build `@usir/browser-adapter` (DOM Accessibility Tree) | ✅ | Package created: Hot/Warm/Cold tiers, DOM adapter, 7 browser tools |
+| Build Playwright-based zero-shot adapter prototype | ✅ | `@usir/playwright-adapter`: DOM extractor (injected eval), snapshot engine, 8 Playwright tools |
+| Add Capability Registry — discover tools across adapters | ✅ | `AdapterCapabilityRegistry` in `@usir/runtime`: cross-adapter tool/role discovery |
 | Public alpha on GitHub — invite 100 developers | ⏳ | |
-| Open `docs/ontology/` for community proposals | ⏳ | |
-| Write 1.0 candidate spec for Universal Intent Ontology | ⏳ | |
+| Open `docs/ontology/` for community proposals | ✅ | `docs/ontology/` directory with v1 spec and proposals folder |
+| Write 1.0 candidate spec for Universal Intent Ontology | ✅ | `docs/ontology/universal-intent-ontology-v1.md` — full 8-layer spec |
 
 ---
 
@@ -138,9 +138,9 @@
 
 | Metric | Value |
 |--------|-------|
-| TypeScript packages | 5 |
-| Lines of implementation | ~3,600 |
-| Tests | 88 (all passing) |
+| TypeScript packages | 7 |
+| Lines of implementation | ~5,200 |
+| Tests | 100 (all passing) |
 | Lint errors | 0 |
 | Warnings | 26 (all `no-explicit-any` / `no-unused-vars`) |
 | CI | Not configured |

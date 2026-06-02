@@ -1,0 +1,22 @@
+{
+  "name": "@usir/playwright-adapter",
+  "version": "0.1.0",
+  "description": "Playwright zero-shot adapter — bridges any web page to USIR SemanticSnapshot via Playwright automation",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf dist",
+    "test": "vitest run",
+    "lint": "eslint src/",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@usir/protocol": "workspace:*",
+    "@usir/runtime": "workspace:*",
+    "playwright": "^1.52.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3"
+  }
+}
