@@ -151,10 +151,10 @@
 
 | Task | Status |
 |------|--------|
-| 4a. Build `DiscoveryService` — LAN broadcast (mDNS) + signaling server registry | ⏳ |
-| 4b. Build `CapabilityAdvertisement` — broadcast supported roles, tools, intents to peers | ⏳ |
-| 4c. Extend `AdapterCapabilityRegistry` with remote peer capabilities | ⏳ |
-| 4d. Build `PeerDirectory` — unified local + remote peer views | ⏳ |
+| 4a. Build `DiscoveryService` — signaling server registry + periodic presence broadcast | ✅ |
+| 4b. Build `CapabilityAdvertisement` — broadcast supported roles, tools, intents to peers | ✅ |
+| 4c. Build `RemoteCapabilityBridge` — interface for runtime adapter registry integration | ✅ |
+| 4d. Build `PeerDirectory` — unified local + remote peer views with filters | ✅ |
 
 ### Phase 5: L8 Collaboration Intent Handlers
 
