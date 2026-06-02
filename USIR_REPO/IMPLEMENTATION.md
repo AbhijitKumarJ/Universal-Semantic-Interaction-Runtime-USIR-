@@ -226,13 +226,13 @@
 
 | Task | Status |
 |------|--------|
-| 2a. Define trust score data model (score 0–100, weight factors, decay function) | ⏳ |
-| 2b. Build trust scoring engine — weighted factors: uptime, successful verifications, peer reviews, chain depth | ⏳ |
-| 2c. Implement trust decay — reduce scores for stale/offline publishers over configurable half-life | ⏳ |
-| 2d. Build reputation oracle — collect attestations from peer runtimes about capability quality | ⏳ |
-| 2e. Integrate trust scores into `TrustMigration` — minimum score policy, chain-of-trust weighting | ⏳ |
-| 2f. Build trust dashboard — query scores, view breakdown, dispute/resolve | ⏳ |
-| 2g. Write tests: score calculation, decay curve, oracle attestation aggregation | ⏳ |
+| 2a. Define trust score data model — `TrustScore`, `TrustFactor`, `TrustDecayConfig`, `Attestation`, `AttestationAggregate`, `TrustScoreBreakdown` + weight constants | ✅ |
+| 2b. Build `TrustEngine` — weighted factor scoring (base/verification/attestation/uptime/recency) with configurable weights | ✅ |
+| 2c. Implement trust decay — exponential half-life decay (`applyDecay()`, default 30d half-life) | ✅ |
+| 2d. Build `ReputationOracle` — attestation submission, expiry filter, aggregate computation, prune | ✅ |
+| 2e. Integrate trust scores into `TrustMigration` — `minimumTrustScore` policy, `TrustScoreProvider` interface, `setTrustScore()`/`getTrustScore()` | ✅ |
+| 2f. Build trust dashboard — `GET /trust` (all scores), `GET /trust/:id` (breakdown + attestations), `POST /trust/attest` (submit) | ✅ |
+| 2g. Write tests: 6 trust-engine tests (scoring, verified boost, attestation incorporation, breakdown, decay, half-life), 6 oracle tests + 3 server endpoint tests = 15 tests | ✅ |
 
 ### Phase 3: Pricing & Invoicing
 
@@ -282,8 +282,8 @@
 | Metric | Value |
 |--------|-------|
 | TypeScript packages | 10 (+ `@usir/federation`, `@usir/registry`, `@usir/registry-client`) |
-| Lines of implementation | ~8,600 (+ ~1,500 in registry & registry-client) |
-| Tests | 209 (100 pre-existing + 62 federation + 39 registry + 8 client) |
+| Lines of implementation | ~9,800 (+ ~1,200 in trust engine, oracle, server trust endpoints, TrustMigration update) |
+| Tests | 224 (209 + 15 new trust tests) |
 | Lint errors | 0 |
 | Warnings | 58 (44 pre-existing + 10 registry + 4 client; all `no-explicit-any` / `no-unused-vars`) |
 | CI | Not configured |

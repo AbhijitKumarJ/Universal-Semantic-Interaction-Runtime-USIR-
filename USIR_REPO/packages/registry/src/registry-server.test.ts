@@ -168,4 +168,67 @@ describe('RegistryServer HTTP', () => {
     const res = await httpGet('/unknown');
     expect(res.status).toBe(404);
   });
+
+  it('GET /trust/:id returns trust breakdown for a capability', async () => {
+    await httpPost('/capabilities', {
+      capability: {
+        capabilityId: 'cap://trust/detail/v1',
+        displayName: 'Trust Detail',
+        handlesIntents: ['intent.test'],
+        intentLayers: ['L1'],
+        provider: { id: 'prov-tr', name: 'Trust Prov', trustScore: 0.9 },
+        pricing: { model: 'free' },
+        requiredPermissions: ['read'],
+        endpoint: { protocol: 'in-process' },
+        metadata: { version: '1.0.0' },
+      },
+      category: 'development',
+      publisher: { publisherId: 'pub-tr', name: 'Trust Pub', publicKey: 'key-tr' },
+    });
+
+    const res = await httpGet('/trust/cap%3A%2F%2Ftrust%2Fdetail%2Fv1');
+    expect(res.status).toBe(200);
+    expect(res.body.breakdown).toBeDefined();
+    expect(res.body.breakdown.capabilityId).toBe('cap://trust/detail/v1');
+    expect(res.body.breakdown.overall).toBeGreaterThan(0);
+    expect(res.body.attestations).toBeDefined();
+  });
+
+  it('POST /trust/attest records an attestation', async () => {
+    await httpPost('/capabilities', {
+      capability: {
+        capabilityId: 'cap://trust/attest/v1',
+        displayName: 'Attest Target',
+        handlesIntents: ['intent.test'],
+        intentLayers: ['L1'],
+        provider: { id: 'prov-at', name: 'AT Prov', trustScore: 0.7 },
+        pricing: { model: 'free' },
+        requiredPermissions: ['read'],
+        endpoint: { protocol: 'in-process' },
+        metadata: { version: '1.0.0' },
+      },
+      category: 'development',
+      publisher: { publisherId: 'pub-at', name: 'AT Pub', publicKey: 'key-at' },
+    });
+
+    const res = await httpPost('/trust/attest', {
+      id: 'att-test-1',
+      capabilityId: 'cap://trust/attest/v1',
+      attestorId: 'peer-test',
+      score: 92,
+      attestedAt: Date.now(),
+      expiresAt: Date.now() + 90 * 24 * 60 * 60 * 1000,
+    });
+
+    expect(res.status).toBe(201);
+    expect(res.body.status).toBe('recorded');
+    expect(res.body.aggregate.averageScore).toBe(92);
+  });
+
+  it('GET /trust returns trust dashboard', async () => {
+    const res = await httpGet('/trust');
+    expect(res.status).toBe(200);
+    expect(res.body.scores).toBeDefined();
+    expect(res.body.total).toBeGreaterThan(0);
+  });
 });

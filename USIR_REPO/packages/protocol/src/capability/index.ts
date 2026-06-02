@@ -141,3 +141,5 @@ export function createCapabilityListing(cap: Capability, category: CapabilityCat
     status: 'active',
   };
 }
+
+export * from './trust-types';

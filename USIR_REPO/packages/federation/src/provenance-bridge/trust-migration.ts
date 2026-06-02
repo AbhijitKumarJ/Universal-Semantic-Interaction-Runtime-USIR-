@@ -1,4 +1,4 @@
-import type { ProvenanceNode, Authorization, ProvenanceGraph } from '@usir/protocol/provenance';
+import type { ProvenanceNode, ProvenanceGraph } from '@usir/protocol/provenance';
 
 export interface TrustMigrationRequest {
   requestId: string;
@@ -13,6 +13,7 @@ export interface TrustMigrationResult {
   success: boolean;
   verified: boolean;
   chain: string[];
+  trustScore?: number;
   error?: string;
 }
 
@@ -21,14 +22,21 @@ export interface TrustPolicy {
   maxChainDepth: number;
   allowedActorTypes: Array<'user' | 'agent' | 'system'>;
   requireApprovalForDelegation: boolean;
+  minimumTrustScore?: number;
+}
+
+export interface TrustScoreProvider {
+  getScore(runtimeId: string): number | null;
 }
 
 export class TrustMigration {
   private policies: Map<string, TrustPolicy> = new Map();
   private pendingMigrations: Map<string, TrustMigrationRequest> = new Map();
   private trustedRuntimes: Set<string> = new Set();
+  private runtimeTrustScores: Map<string, number> = new Map();
   private localGraph: ProvenanceGraph;
   private localRuntimeId: string;
+  private scoreProvider: TrustScoreProvider | null = null;
 
   constructor(localRuntimeId: string, localGraph: ProvenanceGraph) {
     this.localRuntimeId = localRuntimeId;
@@ -51,6 +59,18 @@ export class TrustMigration {
     return this.trustedRuntimes.has(runtimeId);
   }
 
+  setTrustScore(runtimeId: string, score: number): void {
+    this.runtimeTrustScores.set(runtimeId, Math.min(100, Math.max(0, score)));
+  }
+
+  getTrustScore(runtimeId: string): number | null {
+    return this.runtimeTrustScores.get(runtimeId) ?? null;
+  }
+
+  setScoreProvider(provider: TrustScoreProvider): void {
+    this.scoreProvider = provider;
+  }
+
   requestMigration(request: TrustMigrationRequest): TrustMigrationResult {
     if (Date.now() > request.expiresAt) {
       return { success: false, verified: false, chain: [], error: 'Migration request expired' };
@@ -65,7 +85,20 @@ export class TrustMigration {
     }
 
     const chain = this.buildChain(node, policy);
-    const verified = this.verifyChain(chain, policy);
+    let verified = this.verifyChain(chain, policy);
+
+    let trustScore: number | undefined;
+    if (verified && policy.minimumTrustScore !== undefined) {
+      const score = this.resolveTrustScore(request.sourceRuntimeId);
+      trustScore = score ?? undefined;
+      if (score !== null && score < policy.minimumTrustScore) {
+        verified = false;
+      }
+    }
+
+    if (verified && trustScore === undefined) {
+      trustScore = this.resolveTrustScore(request.sourceRuntimeId) ?? undefined;
+    }
 
     if (verified) {
       this.trustedRuntimes.add(request.sourceRuntimeId);
@@ -77,7 +110,10 @@ export class TrustMigration {
       success: verified,
       verified,
       chain,
-      error: verified ? undefined : 'Trust chain verification failed',
+      trustScore,
+      error: verified ? undefined : (trustScore !== undefined && policy.minimumTrustScore !== undefined && trustScore < policy.minimumTrustScore
+        ? `Trust score ${trustScore} below minimum ${policy.minimumTrustScore}`
+        : 'Trust chain verification failed'),
     };
   }
 
@@ -178,6 +214,16 @@ export class TrustMigration {
     }
 
     return true;
+  }
+
+  private resolveTrustScore(runtimeId: string): number | null {
+    const local = this.runtimeTrustScores.get(runtimeId);
+    if (local !== undefined) return local;
+    if (this.scoreProvider) {
+      const provided = this.scoreProvider.getScore(runtimeId);
+      if (provided !== null) return provided;
+    }
+    return null;
   }
 
   private getDefaultPolicy(): TrustPolicy {

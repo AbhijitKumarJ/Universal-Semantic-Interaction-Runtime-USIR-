@@ -20,6 +20,14 @@
     "./verification": {
       "types": "./dist/verification.d.ts",
       "import": "./dist/verification.js"
+    },
+    "./trust": {
+      "types": "./dist/trust-engine.d.ts",
+      "import": "./dist/trust-engine.js"
+    },
+    "./oracle": {
+      "types": "./dist/reputation-oracle.d.ts",
+      "import": "./dist/reputation-oracle.js"
     }
   },
   "scripts": {

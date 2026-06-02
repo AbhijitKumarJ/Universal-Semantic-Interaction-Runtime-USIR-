@@ -1,7 +1,9 @@
-import type { Capability, CapabilityCategory, RegistrySearchQuery, PublisherIdentity } from '@usir/protocol/capability';
+import type { Capability, CapabilityCategory, RegistrySearchQuery, PublisherIdentity, Attestation, TrustScoreBreakdown } from '@usir/protocol/capability';
 import { RegistryStore } from './registry-store';
 import { fullVerification } from './verification';
 import { getHealthStatus } from './health';
+import { TrustEngine } from './trust-engine';
+import { ReputationOracle } from './reputation-oracle';
 import { createServer, type Server, type IncomingMessage, type ServerResponse } from 'http';
 
 export interface RegistryServerConfig {
@@ -12,6 +14,8 @@ export interface RegistryServerConfig {
 
 export class RegistryServer {
   public readonly store = new RegistryStore();
+  public readonly trustEngine = new TrustEngine();
+  public readonly oracle = new ReputationOracle();
   private server: Server | null = null;
   private config: RegistryServerConfig;
 
@@ -63,10 +67,17 @@ export class RegistryServer {
         this.handleStats(res);
       } else if (path === '/publishers' && method === 'GET') {
         this.handlePublishers(res);
+      } else if (path === '/trust' && method === 'GET') {
+        this.handleTrustDashboard(res);
+      } else if (path.startsWith('/trust/') && method === 'GET') {
+        const id = decodeURIComponent(path.slice('/trust/'.length));
+        this.handleTrustDetail(id, res);
+      } else if (path === '/trust/attest' && method === 'POST') {
+        await this.handleAttest(req, res);
       } else {
         this.jsonResponse(res, 404, { error: 'Not found' });
       }
-    } catch (err) {
+    } catch {
       this.jsonResponse(res, 500, { error: 'Internal server error' });
     }
   }
@@ -166,6 +177,55 @@ export class RegistryServer {
   private handlePublishers(res: ServerResponse): void {
     const publishers = this.store.getPublishers();
     this.jsonResponse(res, 200, publishers);
+  }
+
+  private handleTrustDashboard(res: ServerResponse): void {
+    const stats = this.store.getStats();
+    const listings = Array.from((this.store as any).listings.values()).map((s: any) => s.listing).filter(Boolean);
+    const breakdowns: TrustScoreBreakdown[] = listings.map((listing: any) => {
+      const agg = this.oracle.getAggregate(listing.capability.capabilityId);
+      return this.trustEngine.getBreakdown(listing.capability.capabilityId, listing, agg, stats.uptime);
+    });
+    this.jsonResponse(res, 200, { scores: breakdowns, total: breakdowns.length });
+  }
+
+  private handleTrustDetail(id: string, res: ServerResponse): void {
+    const listing = this.store.getListing(id);
+    if (!listing) {
+      this.jsonResponse(res, 404, { error: 'Capability not found' });
+      return;
+    }
+    const stats = this.store.getStats();
+    const agg = this.oracle.getAggregate(id);
+    const breakdown = this.trustEngine.getBreakdown(id, listing, agg, stats.uptime);
+    const attestations = this.oracle.getAttestations(id);
+    this.jsonResponse(res, 200, { breakdown, attestations });
+  }
+
+  private async handleAttest(req: IncomingMessage, res: ServerResponse): Promise<void> {
+    const body = await readBody(req);
+    let attestation: Attestation;
+    try {
+      attestation = JSON.parse(body);
+    } catch {
+      this.jsonResponse(res, 400, { error: 'Invalid JSON body' });
+      return;
+    }
+
+    if (!attestation.capabilityId || !attestation.attestorId || attestation.score === undefined) {
+      this.jsonResponse(res, 400, { error: 'Missing required fields: capabilityId, attestorId, score' });
+      return;
+    }
+
+    const listing = this.store.getListing(attestation.capabilityId);
+    if (!listing) {
+      this.jsonResponse(res, 404, { error: 'Capability not found' });
+      return;
+    }
+
+    this.oracle.submitAttestation(attestation);
+    const agg = this.oracle.getAggregate(attestation.capabilityId);
+    this.jsonResponse(res, 201, { status: 'recorded', aggregate: agg });
   }
 
   private jsonResponse(res: ServerResponse, status: number, data: unknown): void {

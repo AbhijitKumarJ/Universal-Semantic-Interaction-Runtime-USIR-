@@ -6,3 +6,7 @@ export { verifyCapabilitySignature, verifyPublisherIdentity, verifyCapabilitySch
 export type { VerificationResult } from './verification';
 export { getHealthStatus } from './health';
 export type { HealthStatus } from './health';
+export { TrustEngine } from './trust-engine';
+export type { TrustEngineConfig } from './trust-engine';
+export { ReputationOracle } from './reputation-oracle';
+export type { OracleConfig } from './reputation-oracle';
