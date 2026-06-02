@@ -263,18 +263,18 @@
 
 ### Phase 5: IoT / XR Adapters
 
-| Task | Status |
-|------|--------|
-| 5a. Scaffold `@usir/adapters-iot` package | ⏳ |
-| 5b. Build MQTT adapter — publish, subscribe, bridge topics ↔ SemanticGraph entities | ⏳ |
-| 5c. Build CoAP adapter — discover resources, observe, read/write attributes | ⏳ |
-| 5d. Build Modbus / OPC-UA adapter (industrial IoT) — read registers, write coils, browse tags | ⏳ |
-| 5e. Build Sensor fusion adapter — aggregate telemetry, threshold alerts, time-series queries | ⏳ |
-| 5f. Scaffold `@usir/adapters-xr` package | ⏳ |
-| 5g. Build Unity bridge adapter — send/receive spatial transforms, trigger XR events via NamedPipe/WS | ⏳ |
-| 5h. Build Spatial anchor adapter — persist/query anchors, coordinate system transforms | ⏳ |
-| 5i. Build XR input adapter — map hand/eye/gaze tracking to SemanticGraph entity interactions | ⏳ |
-| 5j. Write tests: MQTT connect/pub/sub, CoAP resource discovery, XR spatial sync | ⏳ |
+ | Task | Status |
+ |------|--------|
+ | 5a. Scaffold `@usir/adapters-iot` package | ✅ |
+ | 5b. Build MQTT adapter — publish, subscribe, bridge topics ↔ SemanticGraph entities | ✅ |
+ | 5c. Build CoAP adapter — discover resources, observe, read/write attributes | ✅ |
+ | 5d. Build Modbus / OPC-UA adapter (industrial IoT) — read registers, write coils, browse tags | ✅ |
+ | 5e. Build Sensor fusion adapter — aggregate telemetry, threshold alerts, time-series queries | ✅ |
+ | 5f. Scaffold `@usir/adapters-xr` package | ✅ |
+ | 5g. Build Unity bridge adapter — send/receive spatial transforms, trigger XR events via NamedPipe/WS | ✅ |
+ | 5h. Build Spatial anchor adapter — persist/query anchors, coordinate system transforms | ✅ |
+ | 5i. Build XR input adapter — map hand/eye/gaze tracking to SemanticGraph entity interactions | ✅ |
+ | 5j. Write tests: MQTT connect/pub/sub, CoAP resource discovery, XR spatial sync | ✅ |
 
 ---
 
@@ -282,10 +282,10 @@
 
 | Metric | Value |
 |--------|-------|
-| TypeScript packages | 10 (+ `@usir/federation`, `@usir/registry`, `@usir/registry-client`) |
-| Lines of implementation | ~11,500 (+ ~1,700 in pricing engine, usage tracker, invoicing, payment provider, server endpoints) |
-| Tests | 242 (224 + 18 new pricing tests) |
+| TypeScript packages | 12 (+ `@usir/adapters-iot`, `@usir/adapters-xr`) |
+| Lines of implementation | ~12,700 (+ ~1,247 in IoT adapters, XR adapters) |
+| Tests | 295 (242 + 33 IoT + 20 XR) |
 | Lint errors | 0 |
-| Warnings | 58 (44 pre-existing + 10 registry + 4 client; all `no-explicit-any` / `no-unused-vars`) |
+| Warnings | ~60 (all `no-explicit-any` / `no-unused-vars`) |
 | CI | Not configured |
 | Published to npm | None |

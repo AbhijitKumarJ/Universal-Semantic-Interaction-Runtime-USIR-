@@ -1,0 +1,45 @@
+{
+  "name": "@usir/adapters-iot",
+  "version": "0.1.0",
+  "description": "IoT adapters — MQTT, CoAP, Modbus/OPC-UA, and sensor fusion via the Tool interface",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./mqtt": {
+      "types": "./dist/mqtt-adapter.d.ts",
+      "import": "./dist/mqtt-adapter.js"
+    },
+    "./coap": {
+      "types": "./dist/coap-adapter.d.ts",
+      "import": "./dist/coap-adapter.js"
+    },
+    "./modbus": {
+      "types": "./dist/modbus-adapter.d.ts",
+      "import": "./dist/modbus-adapter.js"
+    },
+    "./sensor-fusion": {
+      "types": "./dist/sensor-fusion-adapter.d.ts",
+      "import": "./dist/sensor-fusion-adapter.js"
+    },
+    "./factory": {
+      "types": "./dist/factory.d.ts",
+      "import": "./dist/factory.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc -w",
+    "clean": "rm -rf dist",
+    "test": "vitest run",
+    "lint": "eslint src/",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.3.3"
+  }
+}
