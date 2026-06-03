@@ -54,6 +54,10 @@ export interface StepResult {
   affectedEntityIds: string[];
   /** Provenance node id for this step */
   provenanceId: string;
+  /** Number of retry attempts made (0 = first try) */
+  retryCount?: number;
+  /** Whether the circuit breaker prevented execution */
+  circuitBreakerTripped?: boolean;
 }
 
 export interface ExecutionResult {

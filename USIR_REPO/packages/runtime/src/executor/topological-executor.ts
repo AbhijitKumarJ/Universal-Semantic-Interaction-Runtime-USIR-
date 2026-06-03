@@ -4,17 +4,61 @@
  * LLM plans; runtime executes. The executor maintains the invariant that
  * every step is either completed or failed before the plan terminates,
  * and that parallel steps are run concurrently.
+ *
+ * Supports retry with exponential backoff and per-tool circuit breakers
+ * to handle transient failures gracefully.
  */
 
 import type { ExecutionPlan, ExecutionStep, ExecutionResult, StepResult } from '../router/types';
 import type { ToolRegistry } from '../disambiguation/collaborative-narrowing';
+import { CircuitBreaker, type CircuitBreakerOptions } from './circuit-breaker';
+
+export interface RetryConfig {
+  maxRetries: number;
+  baseDelayMs: number;
+  maxDelayMs: number;
+  backoffFactor: number;
+}
+
+const DEFAULT_RETRY: RetryConfig = {
+  maxRetries: 3,
+  baseDelayMs: 100,
+  maxDelayMs: 5_000,
+  backoffFactor: 2,
+};
+
+function isRetryable(error: unknown): boolean {
+  const msg = error instanceof Error ? error.message : String(error);
+  // Logical errors — retrying won't help
+  if (msg.includes('not found in registry')) return false;
+  if (msg.includes('UNRESOLVED:')) return false;
+  return true;
+}
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function computeBackoff(attempt: number, config: RetryConfig): number {
+  const delay = config.baseDelayMs * Math.pow(config.backoffFactor, attempt);
+  // Add jitter ±25%
+  const jitter = delay * 0.25 * (Math.random() * 2 - 1);
+  return Math.min(delay + jitter, config.maxDelayMs);
+}
 
 export class TopologicalExecutor {
+  private toolCircuitBreakers: Map<string, CircuitBreaker> = new Map();
+  private retryConfig: RetryConfig;
+
   constructor(
     private toolRegistry: ToolRegistry,
     private onStepStart?: (step: ExecutionStep) => void,
     private onStepComplete?: (result: StepResult) => void,
-  ) {}
+    retryConfig?: Partial<RetryConfig>,
+    private circuitBreakerOptions?: Partial<CircuitBreakerOptions>,
+  ) {
+    this.retryConfig = { ...DEFAULT_RETRY, ...retryConfig };
+  }
 
   public async execute(plan: ExecutionPlan): Promise<ExecutionResult> {
     const start = Date.now();
@@ -68,34 +112,83 @@ export class TopologicalExecutor {
   }
 
   private async runStep(step: ExecutionStep, previousResults: Map<string, StepResult>): Promise<StepResult> {
-    const stepStart = Date.now();
-    this.onStepStart?.(step);
-    try {
-      const tool = this.toolRegistry.getTool(step.tool);
-      if (!tool) {
-        throw new Error(`Tool not found in registry: ${step.tool}`);
-      }
-      // Resolve any UNRESOLVED:xxx sentinels in args
-      const resolvedArgs = this.resolveArgs(step.args, previousResults);
-      const output = await tool.execute(resolvedArgs);
-      return {
-        stepId: step.stepId,
-        success: true,
-        output,
-        durationMs: Date.now() - stepStart,
-        affectedEntityIds: this.extractAffectedEntities(output),
-        provenanceId: this.extractProvenanceId(output) ?? `provenance-pending-${step.stepId}`,
-      };
-    } catch (err) {
+    // Circuit breaker check — fail fast if the breaker for this tool is OPEN
+    const breaker = this.getOrCreateBreaker(step.tool);
+    if (!breaker.allowRequest()) {
       return {
         stepId: step.stepId,
         success: false,
-        error: err instanceof Error ? err.message : String(err),
-        durationMs: Date.now() - stepStart,
+        error: `Circuit breaker OPEN for tool '${step.tool}' — failing fast`,
+        durationMs: 0,
         affectedEntityIds: [],
-        provenanceId: `provenance-failed-${step.stepId}`,
+        provenanceId: `provenance-cb-${step.stepId}`,
+        retryCount: 0,
+        circuitBreakerTripped: true,
       };
     }
+
+    const stepStart = Date.now();
+    this.onStepStart?.(step);
+
+    let lastError: unknown;
+    let retryCount = 0;
+
+    for (let attempt = 0; attempt <= this.retryConfig.maxRetries; attempt++) {
+      if (attempt > 0) {
+        const delay = computeBackoff(attempt - 1, this.retryConfig);
+        await sleep(delay);
+      }
+
+      try {
+        const tool = this.toolRegistry.getTool(step.tool);
+        if (!tool) {
+          throw new Error(`Tool not found in registry: ${step.tool}`);
+        }
+        const resolvedArgs = this.resolveArgs(step.args, previousResults);
+        const output = await tool.execute(resolvedArgs);
+
+        // Success — tell the breaker and return
+        breaker.recordSuccess();
+        return {
+          stepId: step.stepId,
+          success: true,
+          output,
+          durationMs: Date.now() - stepStart,
+          affectedEntityIds: this.extractAffectedEntities(output),
+          provenanceId: this.extractProvenanceId(output) ?? `provenance-pending-${step.stepId}`,
+          retryCount: attempt,
+        };
+      } catch (err) {
+        lastError = err;
+        retryCount = attempt + 1;
+
+        if (!isRetryable(err) || attempt >= this.retryConfig.maxRetries) {
+          // Non-retryable or exhausted — break out
+          break;
+        }
+      }
+    }
+
+    // All attempts failed — report and notify the breaker
+    breaker.recordFailure();
+    return {
+      stepId: step.stepId,
+      success: false,
+      error: lastError instanceof Error ? lastError.message : String(lastError),
+      durationMs: Date.now() - stepStart,
+      affectedEntityIds: [],
+      provenanceId: `provenance-failed-${step.stepId}`,
+      retryCount,
+    };
+  }
+
+  private getOrCreateBreaker(toolName: string): CircuitBreaker {
+    let breaker = this.toolCircuitBreakers.get(toolName);
+    if (!breaker) {
+      breaker = new CircuitBreaker(this.circuitBreakerOptions);
+      this.toolCircuitBreakers.set(toolName, breaker);
+    }
+    return breaker;
   }
 
   private resolveArgs(args: Record<string, unknown>, previousResults: Map<string, StepResult>): Record<string, unknown> {
@@ -109,6 +202,11 @@ export class TopologicalExecutor {
       resolved[key] = value;
     }
     return resolved;
+  }
+
+  /** Reset all circuit breaker state (useful for testing or manual recovery) */
+  public resetCircuitBreakers(): void {
+    this.toolCircuitBreakers.clear();
   }
 
   private extractAffectedEntities(output: unknown): string[] {

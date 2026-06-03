@@ -69,7 +69,7 @@ usir/
 | Package | LOC | Tests | Description |
 |---------|-----|-------|-------------|
 | `@usir/protocol` | ~2,000 | 45 | Shared schemas, ontologies, entity types, Storage interface |
-| `@usir/runtime` | ~1,980 | 53 | Core engine: memory, router, executor, A2U, provenance, JSON/SQLite persistence |
+| `@usir/runtime` | ~2,100 | 60 | Core engine: memory, router, executor (retry + circuit breaker), A2U, provenance, JSON/SQLite persistence |
 | `@usir/audio-pipeline` | ~480 | 24 | Voice capture, VAD, STT, fused intent, local Whisper fallback |
 | `@usir/federation` | ~4,760 | 73 | P2P WebRTC, CRDT graph sync, L8 collaboration, signaling persistence |
 | `@usir/registry` | ~2,440 | 72 | Capability marketplace REST API |
