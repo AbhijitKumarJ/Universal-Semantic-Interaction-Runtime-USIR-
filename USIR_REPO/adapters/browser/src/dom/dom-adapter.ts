@@ -151,12 +151,23 @@ export function buildDomGraph(root: Element, maxDepth: number = 10): SemanticEnt
 
 export function buildViewportEntities(root: Element): SemanticEntity[] {
   const entities: SemanticEntity[] = [];
-  const all = root.querySelectorAll('*');
-  for (const el of all) {
-    if (!isVisible(el)) continue;
-    const rect = el.getBoundingClientRect();
-    if (!isInViewport(rect)) continue;
-    entities.push(elementToEntity(el));
+  const doc = root.ownerDocument ?? document;
+  const walker = doc.createTreeWalker(root, NodeFilter.SHOW_ELEMENT, {
+    acceptNode(node: Node): number {
+      const el = node as Element;
+      const tag = el.tagName.toLowerCase();
+      if (!VISIBLE_ROLES.has(tag)) return NodeFilter.FILTER_SKIP;
+      const style = window.getComputedStyle(el);
+      if (style.display === 'none' || style.visibility === 'hidden' || style.opacity === '0') return NodeFilter.FILTER_REJECT;
+      const rect = el.getBoundingClientRect();
+      if (rect.width === 0 || rect.height === 0) return NodeFilter.FILTER_REJECT;
+      if (!isInViewport(rect)) return NodeFilter.FILTER_REJECT;
+      return NodeFilter.FILTER_ACCEPT;
+    },
+  });
+  let node: Node | null;
+  while ((node = walker.nextNode()) !== null) {
+    entities.push(elementToEntity(node as Element));
   }
   return entities;
 }

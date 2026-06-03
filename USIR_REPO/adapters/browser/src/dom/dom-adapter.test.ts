@@ -12,6 +12,7 @@ function mockElement(overrides: Partial<Element> = {}): Element {
     textContent: 'hello world',
     children: [] as any,
     parentElement: null,
+    ownerDocument: null,
     getAttribute: vi.fn(),
     getBoundingClientRect: vi.fn().mockReturnValue(rect),
     querySelectorAll: vi.fn().mockReturnValue([]),
@@ -19,11 +20,50 @@ function mockElement(overrides: Partial<Element> = {}): Element {
   } as any;
 }
 
+function mockTreeWalker(elements: Element[], filter?: NodeFilter | null): TreeWalker {
+  let idx = 0;
+  const f = filter ?? { acceptNode: () => NodeFilter.FILTER_ACCEPT };
+  return {
+    root: elements[0] ?? null as any,
+    whatToShow: NodeFilter.SHOW_ELEMENT,
+    filter: f as any,
+    currentNode: null as any,
+    nextNode: () => {
+      while (idx < elements.length) {
+        const node = elements[idx++];
+        const result = f.acceptNode(node);
+        if (result === NodeFilter.FILTER_ACCEPT) {
+          return node;
+        }
+      }
+      return null;
+    },
+    previousNode: () => null,
+    firstChild: () => null,
+    lastChild: () => null,
+    nextSibling: () => null,
+    previousSibling: () => null,
+    parentNode: () => null,
+  };
+}
+
 beforeEach(() => {
   vi.stubGlobal('window', {
     getComputedStyle: vi.fn().mockReturnValue({ display: 'block', visibility: 'visible', opacity: '1' }),
     innerWidth: 1024,
     innerHeight: 768,
+  });
+  vi.stubGlobal('document', {
+    createTreeWalker: (_root: Node, _whatToShow: number, filter: NodeFilter | null) => {
+      // Called at runtime — use the actual filter from the implementation
+      return mockTreeWalker([]);
+    },
+  });
+  vi.stubGlobal('NodeFilter', {
+    SHOW_ELEMENT: 1,
+    FILTER_ACCEPT: 1,
+    FILTER_REJECT: 2,
+    FILTER_SKIP: 3,
   });
 });
 
@@ -137,21 +177,43 @@ describe('buildDomGraph', () => {
 });
 
 describe('buildViewportEntities', () => {
+  let capturedFilter: NodeFilter | null = null;
+
+  beforeEach(() => {
+    capturedFilter = null;
+  });
+
+  function withDoc(el: Element): Element {
+    el.ownerDocument = {
+      createTreeWalker: (_root: Node, _whatToShow: number, filter: NodeFilter | null) => {
+        capturedFilter = filter;
+        return mockTreeWalker([el], filter);
+      },
+    } as any;
+    return el;
+  }
+
   it('returns entities for visible elements in viewport', () => {
-    const inView = mockElement({ tagName: 'BUTTON', id: 'visible-btn' });
-    vi.mocked(inView.querySelectorAll).mockReturnValue([inView] as any);
+    const inView = withDoc(mockElement({ tagName: 'BUTTON', id: 'visible-btn' }));
 
     const entities = buildViewportEntities(inView);
     expect(entities.length).toBeGreaterThanOrEqual(1);
+    expect(entities[0].role).toBe('ui_region');
   });
 
   it('skips elements outside viewport', () => {
     const outsideRect: DOMRect = { top: -100, left: -100, width: 10, height: 10, right: -90, bottom: -90, x: -100, y: -100, toJSON: () => {} };
-    const el = mockElement({
-      tagName: 'DIV',
+    const el = withDoc(mockElement({
+      tagName: 'BUTTON',
       getBoundingClientRect: vi.fn().mockReturnValue(outsideRect),
-    });
-    vi.mocked(el.querySelectorAll).mockReturnValue([el] as any);
+    }));
+
+    const entities = buildViewportEntities(el);
+    expect(entities).toEqual([]);
+  });
+
+  it('skips non-VISIBLE_ROLES elements', () => {
+    const el = withDoc(mockElement({ tagName: 'SCRIPT' }));
 
     const entities = buildViewportEntities(el);
     expect(entities).toEqual([]);

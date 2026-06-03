@@ -111,13 +111,24 @@ export const DOM_EXTRACTOR_SCRIPT = `
 
   function extractViewport() {
     var entities = [];
-    var all = document.querySelectorAll('*');
-    for (var i = 0; i < all.length; i++) {
-      var el = all[i];
-      if (!isVisible(el)) continue;
-      var r = el.getBoundingClientRect();
-      if (!isInViewport(r)) continue;
-      entities.push(toEntity(el, null));
+    var walker = document.createTreeWalker(
+      document.body,
+      NodeFilter.SHOW_ELEMENT,
+      {
+        acceptNode: function(node) {
+          var tag = node.tagName.toLowerCase();
+          if (!VISIBLE_TAGS.has(tag)) return NodeFilter.FILTER_SKIP;
+          var style = window.getComputedStyle(node);
+          if (style.display === 'none' || style.visibility === 'hidden' || style.opacity === '0') return NodeFilter.FILTER_REJECT;
+          var r = node.getBoundingClientRect();
+          if (r.width === 0 || r.height === 0) return NodeFilter.FILTER_REJECT;
+          if (r.left >= window.innerWidth || r.top >= window.innerHeight || r.right <= 0 || r.bottom <= 0) return NodeFilter.FILTER_REJECT;
+          return NodeFilter.FILTER_ACCEPT;
+        }
+      }
+    );
+    while (walker.nextNode()) {
+      entities.push(toEntity(walker.currentNode, null));
     }
     return entities;
   }
