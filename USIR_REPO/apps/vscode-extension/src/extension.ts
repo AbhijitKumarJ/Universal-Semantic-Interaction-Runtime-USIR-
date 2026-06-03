@@ -7,7 +7,8 @@ import { ProvenanceStore } from '@usir/runtime';
 import { InteractionMemory } from '@usir/runtime';
 import { TrustClassifier } from '@usir/runtime';
 import { A2UDispatcher } from '@usir/runtime';
-import { FastWhisperClient, AudioCapture, buildFusedIntent, type PointingTarget, type ImplicitSignals } from '@usir/audio-pipeline';
+import { FastWhisperClient, buildFusedIntent, type PointingTarget, type ImplicitSignals } from '@usir/audio-pipeline';
+import { WebviewAudioCapture } from './audio/webview-audio-capture';
 
 let snapshotEngine: SnapshotEngine;
 let toolRegistry: VSCodeToolRegistry;
@@ -16,7 +17,7 @@ let executor: TopologicalExecutor;
 let provenanceStore: ProvenanceStore;
 let interactionMemory: InteractionMemory;
 let a2uDispatcher: A2UDispatcher;
-let audioCapture: AudioCapture | null = null;
+let audioCapture: WebviewAudioCapture | null = null;
 let whisperClient: FastWhisperClient;
 
 export async function activate(context: vscode.ExtensionContext) {
@@ -197,7 +198,7 @@ async function startListening(context: vscode.ExtensionContext) {
     return;
   }
 
-  audioCapture = new AudioCapture({
+  audioCapture = new WebviewAudioCapture({
     stt: whisperClient,
     language: 'en',
     prompt: 'developer voice commands for IDE',
