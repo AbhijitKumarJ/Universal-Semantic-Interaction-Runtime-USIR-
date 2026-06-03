@@ -10,7 +10,7 @@ USIR aims to create a semantic operating layer that decouples human intent from 
 
 The project draws a direct analogy: just as TCP/IP abstracted byte transport and HTML abstracted document presentation, USIR aims to abstract interaction itself.
 
-Status: 12 TypeScript packages, ~17,000 lines of implementation, 325 tests, 0 lint errors. The runtime, federated P2P layer, and capability marketplace are fully implemented. The VS Code extension MVP is scaffolded but untested in a real editor.
+Status: 12 TypeScript packages, ~17,000 lines of implementation, 501 tests, 0 lint errors. The runtime, federated P2P layer, capability marketplace, and all adapters (VS Code, browser, Playwright, OS, IoT, XR) are fully implemented with test coverage. The VS Code extension MVP is scaffolded but untested in a real editor.
 
 ## 2. Repository Structure
 
@@ -112,8 +112,8 @@ Files: `packages/registry/`, `packages/registry-client/` (~2,880 LOC, 80 tests)
 
 | Adapter | Package | Tools | Tests |
 |---------|---------|-------|-------|
-| VS Code | `@usir/vscode-adapter` | 9 (openEntity, focusRegion, editEntity, etc.) | 0 |
-| Browser DOM | `@usir/browser-adapter` | 7 (navigate, click, extract, screenshot, etc.) | 0 |
+| VS Code | `@usir/vscode-adapter` | 9 (openEntity, focusRegion, editEntity, etc.) | 65 |
+| Browser DOM | `@usir/browser-adapter` | 7 (navigate, click, extract, screenshot, etc.) | 68 |
 | Playwright | `@usir/playwright-adapter` | 8 (navigate, click, type, extract, screenshot, etc.) | 7 |
 | OS | `@usir/adapters-os` | 20+ (process, fs, window, shell, system) | 30 |
 | IoT | `@usir/adapters-iot` | 25+ (MQTT pub/sub, CoAP, Modbus, sensor fusion) | 33 |
@@ -121,7 +121,7 @@ Files: `packages/registry/`, `packages/registry-client/` (~2,880 LOC, 80 tests)
 
 ## 4. Package Deep Dive
 
-### 4.1 @usir/protocol — The Shared Language (~2,000 LOC, 41 tests)
+### 4.1 @usir/protocol — The Shared Language (~2,000 LOC, 41 tests, + `Storage` interface)
 
 Zero runtime dependencies. Pure TypeScript type definitions and helpers.
 
@@ -135,10 +135,11 @@ Zero runtime dependencies. Pure TypeScript type definitions and helpers.
 | waypoint/ | InteractionWaypoint — multi-modal presentation primitive (display/audio/spatial/haptic/XR) with fallback chains |
 | provenance/ | ProvenanceNode, ProvenanceGraph, causal chain walker, SHA-256 entity hashing |
 | capability/ | Registry, trust, and pricing data models for the capability marketplace |
+| storage/ | `Storage` interface — `save<T>(path, data)` / `load<T>(path)`, implemented by `JsonFileStorage` and optional `SqliteStorage` |
 
 Notable: The Waypoint type is unusually thorough — it specifies not just display and audio, but also XR holographic buttons, haptic patterns, dial/watch inputs, and a 5-channel fallback chain (SMS, email, push, USB, QR, voice call).
 
-### 4.2 @usir/runtime — The Brain (~1,880 LOC, 42 tests)
+### 4.2 @usir/runtime — The Brain (~2,200 LOC, 60 tests)
 
 | Module | Purpose |
 |--------|---------|
@@ -146,9 +147,11 @@ Notable: The Waypoint type is unusually thorough — it specifies not just displ
 | router/llm-router | OpenAI-compatible LLM call → JSON ExecutionPlan; strips hot snapshot for prompt |
 | router/types | ExecutionStep, ExecutionPlan, StepResult, ExecutionResult types |
 | router/prompts | System + user prompt templates; strict JSON-output instruction |
-| executor/topological-executor | DAG executor — runs steps in dependency order, parallel ready steps, Promise.race |
+| executor/circuit-breaker | Per-tool circuit breaker: CLOSED/OPEN/HALF_OPEN states, configurable threshold + cooldown |
+| executor/topological-executor | DAG executor — retry with exponential backoff + jitter, per-tool circuit breaker integration, `StepResult.retryCount` / `.circuitBreakerTripped` |
+| persist/ | `JsonFileStorage` (zero-dep default), `SqliteStorage` (opt-in `better-sqlite3`), `Persistable<T>` interface |
 | disambiguation/collaborative-narrowing | NATO phonetic names (Alpha–Zulu), waypoint builder, ambiguity→waypoint converter |
-| provenance/provenance-store | In-memory provenance graph; record, explainHistory, approve/reject |
+| provenance/provenance-store | In-memory provenance graph; record, explainHistory, approve/reject; `Persistable` with `Storage` injection |
 | a2u/trust-classifier | 3-tier gate: read-only auto, reversible on confidence, irreversible always approve |
 | a2u/dispatcher | Routes A2U envelopes; immediate execution, queue, checkpoint, blocker waypoints |
 
@@ -253,34 +256,31 @@ Forward-looking expansions: Zero-Shot Adapter (VLM as compiler), Ambient Sensori
 3. **Multi-modal from day one** — Waypoints carry display, audio (TTS + SSML), spatial (XR), haptic, gesture, dial, and 5 fallback channels.
 4. **Monorepo hygiene** — Turborepo, pnpm workspaces, strict TypeScript, ES2022 target, clean module boundaries.
 5. **Philosophical grounding** — The GUI Trap essay and MASTER-SPEC are well-written and make a compelling case.
-6. **Comprehensive test coverage** — 325 tests across 10 packages with 0 lint errors. The federation package alone has 62 tests covering WebRTC lifecycle, CRDT sync, collaboration handlers, and provenance bridges.
+6. **Comprehensive test coverage** — 501 tests across all 12 packages with 0 lint errors. The federation, registry, browser-adapter, and vscode-adapter packages each have 65–73 tests covering their domains.
 7. **Incremental git history** — 20+ commits with clear phase boundaries (Year 1 Foundation → Year 2 Federation → Year 3+ Marketplace).
 
 ### Weaknesses
 
 1. **No CI/CD** — No GitHub Actions, no automated lint/test/build verification on push.
 2. **No package publication** — No npm publishing config. The protocol package should be published early for community feedback.
-3. **VS Code extension untested** — The activation pipeline (extension.ts) wires real subsystems together but has never been run in a VS Code instance. The audio pipeline depends on Web Audio API (renderer process) — may not work in VS Code's extension host.
-4. **No local Whisper fallback** — The MVP depends entirely on Groq's API. No offline mode.
-5. **No error recovery strategy** — The TopologicalExecutor aborts on first failure (non-optional steps). No retry, no circuit breaker, no graceful degradation.
-6. **Interaction Memory is single-user** — InteractionMemory takes a userId but there's no multi-user or session persistence beyond in-memory.
-7. **Browser adapter tests missing** — `@usir/browser-adapter` and `@usir/vscode-adapter` have zero tests.
+3. **VS Code extension untested in real editor** — The activation pipeline (extension.ts) wires real subsystems together but has never been run in a live VS Code instance. (Audio capture now uses hidden webview bridge, fixing the extension host compatibility issue.)
+4. **Interaction Memory is single-user** — InteractionMemory takes a userId but there's no multi-user or session persistence beyond in-memory.
+5. **Playwright DOM extractor uses injected script** — The `DOM_EXTRACTOR_SCRIPT` runs via `page.evaluate()`; complex SPAs may cause serialization bloat despite the TreeWalker fix.
 
 ### Notable Missing Features (Relative to Roadmap)
 
 - CI/CD pipeline — Not configured
 - npm publication — Not started
-- Local Whisper.cpp fallback — Documented, not implemented
-- Retry logic in executor — Planned, not implemented
-- Interaction memory persistence — Planned, not implemented
 - Multi-user/multi-session support — Not started
+- Audio fingerprint (sound matching, speaker diarization) — Not started
+- XR adapter testing in real Unity editor — Not started
 
 ## 7. Line of Code Summary
 
 | Directory | Files | Approx. LOC | Description |
 |-----------|-------|-------------|-------------|
 | packages/protocol/src/ | 10+ | ~2,000 | Shared types, helpers |
-| packages/runtime/src/ | 9 | ~1,880 | Router, executor, memory, provenance, A2U |
+| packages/runtime/src/ | 10 | ~2,200 | Router, executor, circuit-breaker, persist, memory, provenance, A2U |
 | packages/audio-pipeline/src/ | 5 | ~480 | VAD, STT, capture, fused intent |
 | packages/federation/src/ | 30+ | ~4,760 | P2P WebRTC, CRDT, L8, provenance bridge |
 | packages/registry/src/ | 10 | ~2,440 | REST API, trust, pricing, invoicing |
@@ -290,9 +290,9 @@ Forward-looking expansions: Zero-Shot Adapter (VLM as compiler), Ambient Sensori
 | packages/adapters-xr/src/ | 7 | ~710 | Unity bridge, anchors, XR input |
 | adapters/vscode/src/ | 7 | ~560 | Snapshot tiers, tools |
 | adapters/browser/src/ | 5 | ~490 | DOM adapter, tools |
-| adapters/playwright/src/ | 5 | ~470 | DOM extractor, snapshot engine, tools |
+| adapters/playwright/src/ | 5 | ~470 | DOM extractor (TreeWalker-based), snapshot engine, tools |
 | apps/vscode-extension/src/ | 1 | ~420 | Extension entry point |
-| **Total (implementation)** | **~100** | **~16,700** | TypeScript source |
+| **Total (implementation)** | **~100** | **~17,000** | TypeScript source |
 | docs/ + ontology/ | ~15 | ~3,800 | Spec, roadmap, essays |
 | Ideation/ | ~70 | ~50,000+ | Conversational design history |
 
@@ -307,26 +307,24 @@ Forward-looking expansions: Zero-Shot Adapter (VLM as compiler), Ambient Sensori
 
 ### Critical
 
-1. **Set up CI** — GitHub Actions with `pnpm install && pnpm typecheck && pnpm -r lint && pnpm -r test` as a bare minimum. 325 existing tests provide meaningful regression protection.
+1. **Set up CI** — GitHub Actions with `pnpm install && pnpm typecheck && pnpm -r lint && pnpm -r test` as a bare minimum. 501 existing tests provide meaningful regression protection.
 2. **Publish @usir/protocol** — Even as a 0.1.0-alpha, getting the schemas in front of the community is worth more than polish.
-3. **Add tests for browser and VS Code adapters** — These are the primary adapters for the MVP and have zero test coverage.
 
 ### High
 
-4. **Surface the blog series** — All 6 parts are written but only Part 1 is linked from the root README. Add links to parts 2–6.
-5. **Add a local Whisper.cpp fallback** — The MVP is non-functional offline. Hard blocker for developer adoption.
-6. **Test the VS Code extension activation** — The Web Audio API dependency may fail in the VS Code extension host process.
+3. **Test the VS Code extension activation** — The activation pipeline (extension.ts) has never been run in a live VS Code instance. Audio capture now uses a hidden webview bridge, which should resolve the extension host compatibility issue — needs validation.
+4. **Surface the blog series** — All 6 parts are written; ensure all are linked from the root README.
 
 ### Medium
 
-7. **Add retry logic to the executor** — Configurable retries for transient failures.
-8. **Persist interaction memory** — SQLite or simple JSON file per session.
-9. **Set up npm packaging config** — publishConfig, files whitelist, README for each package.
+5. **Set up npm packaging config** — publishConfig, files whitelist, README for each package.
+6. **Multi-user session support** — InteractionMemory is single-user; needs session isolation for multi-tenant deployments.
+7. **Add integration tests for Playwright adapter** — The `DOM_EXTRACTOR_SCRIPT` is tested via `parseDomResult` unit tests but not against real browser pages.
 
 ## 10. Final Verdict
 
 USIR is an exceptionally well-designed architecture with a compelling thesis, a concrete MVP strategy (VS Code extension as Trojan horse), and substantial implementation progress. The type system is thoughtful, the provenance layer is genuinely innovative, and the A2U trust protocol shows real understanding of agent safety challenges.
 
-The project has grown from a 3,600-line skeleton to a ~16,700-line implementation covering the core runtime, federated P2P layer, capability marketplace, and 6 adapter ecosystems. 325 tests provide meaningful coverage with 0 lint errors.
+The project has grown from a 3,600-line skeleton to a ~17,000-line implementation covering the core runtime, federated P2P layer, capability marketplace, and 6 adapter ecosystems. 501 tests provide meaningful coverage with 0 lint errors. Recent additions include: retry+circuit breaker for error resilience, dual JSON/SQLite persistence, TreeWalker-based DOM extraction for SPA scalability, and 133 new adapter tests.
 
-The next logical steps are: CI/CD pipeline, npm publication for community feedback, testing the VS Code extension in a real editor, and expanding adapter coverage (browser tests, error recovery, offline Whisper fallback). The architecture deserves execution — and it now has enough implementation mass to attract real contributors.
+The next logical steps are: CI/CD pipeline, npm publication for community feedback, testing the VS Code extension in a real editor, and multi-user session persistence. The architecture deserves execution — and it now has enough implementation mass to attract real contributors.

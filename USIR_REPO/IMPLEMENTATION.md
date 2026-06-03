@@ -112,8 +112,10 @@
 | Publish `@usir/protocol` to npm (0.1.0-alpha) | 🔜 | Critical |
 | Test VS Code extension in actual editor | 🔜 | High |
 | Add local Whisper.cpp fallback via `LocalWhisperClient` + `FallbackWhisperClient` | ✅ | High |
-| Add retry logic to `TopologicalExecutor` | ⏳ | Medium |
+| Add retry logic + circuit breaker to `TopologicalExecutor` (exponential backoff with jitter, per-tool CLOSED/OPEN/HALF_OPEN states, fail-fast) | ✅ | Medium |
 | Persist interaction memory, provenance store, and signaling server (JSON file) | ✅ | Medium |
+| Add SQLite as optional persistence backend via `Storage` interface + `SqliteStorage` class (`better-sqlite3` opt-in) | ✅ | Medium |
+| Replace `querySelectorAll('*')` with TreeWalker + NodeFilter in Playwright and browser DOM extractors (fixes SPA scalability) | ✅ | Medium |
 | Set up npm packaging config (publishConfig, files whitelist) | ⏳ | Medium |
 | Add `.nvmrc` and `.npmrc` | ⏳ | Low |
 
@@ -289,7 +291,7 @@
 |--------|-------|
 | TypeScript packages | 12 (+ `@usir/adapters-iot`, `@usir/adapters-xr`) |
 | Lines of implementation | ~14,000 |
-| Tests | 411 total: 50 runtime + 24 audio-pipeline + 73 federation + 65 vscode-adapter + 67 browser-adapter + 45 protocol + 33 IoT + 20 XR + 34 registry |
+| Tests | 501 total: 60 runtime + 24 audio-pipeline + 73 federation + 65 vscode-adapter + 68 browser-adapter + 41 protocol + 33 IoT + 20 XR + 72 registry + 30 OS + 8 registry-client + 7 playwright |
 | Lint errors | 0 |
 | Warnings | ~60 (all `no-explicit-any` / `no-unused-vars`) |
 | CI | Not configured |

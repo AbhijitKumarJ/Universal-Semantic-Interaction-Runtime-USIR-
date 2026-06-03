@@ -87,7 +87,7 @@ pnpm --filter @usir/vscode-extension run dev
 | `pnpm build` | Compile all packages |
 | `pnpm typecheck` | Type-check all packages (no emit) |
 | `pnpm lint` | Lint all packages (ESLint + typescript-eslint) |
-| `pnpm test` | Run all tests (Vitest, 411 tests) |
+| `pnpm test` | Run all tests (Vitest, 501 tests) |
 | `pnpm clean` | Remove all build artifacts |
 | `pnpm dev` | Watch mode for all packages |
 
@@ -120,12 +120,12 @@ USIR draws from the historical analogy of protocol layers:
 ## Status
 
 [![build](https://img.shields.io/badge/build-passing-brightgreen)]()
-[![tests](https://img.shields.io/badge/tests-411-brightgreen)]()
+[![tests](https://img.shields.io/badge/tests-501-brightgreen)]()
 [![lint](https://img.shields.io/badge/lint-passing-brightgreen)]()
 [![typescript](https://img.shields.io/badge/TypeScript-5.9-blue)]()
 [![license](https://img.shields.io/badge/license-MIT-green)]()
 
-🚧 **Pre-alpha** — All core types, runtime classes, adapters, audio pipeline, federation, and VS Code extension are implemented. Build is clean, **411 tests pass** across 12 packages, lint is configured. Key recent additions: Webview audio capture (fixes Node.js extension host compatibility), local Whisper fallback (binary-first, cloud backup), disk persistence for InteractionMemory/ProvenanceStore/SignalingServer, and 132 new adapter tests. Next up: CI/CD pipeline, publish `@usir/protocol` to npm, and test the extension in a live VS Code instance.
+🚧 **Pre-alpha** — All core types, runtime classes, adapters, audio pipeline, federation, and VS Code extension are implemented. Build is clean, **501 tests pass** across 12 packages, lint is configured. Key recent additions: Webview audio capture, local Whisper fallback (binary→cloud), dual JSON/SQLite persistence (shared `Storage` interface), retry+circuit breaker in executor, TreeWalker DOM extraction (SPA-safe). Next up: CI/CD pipeline, publish `@usir/protocol` to npm, and test the extension in a live VS Code instance.
 
 ## License
 

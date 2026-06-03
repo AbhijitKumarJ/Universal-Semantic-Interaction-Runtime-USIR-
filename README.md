@@ -8,9 +8,9 @@ Folders are numbered in order of attempts at reining the ideas behind USIR throu
 ## USIR Implementation — USIR_REPO FOLDER
 
 > A semantic operating layer that decouples human intent from application implementation.
-> [![build](https://img.shields.io/badge/build-passing-brightgreen)]() [![tests](https://img.shields.io/badge/tests-411-brightgreen)]() [![license](https://img.shields.io/badge/license-MIT-green)]()
+> [![build](https://img.shields.io/badge/build-passing-brightgreen)]() [![tests](https://img.shields.io/badge/tests-501-brightgreen)]() [![license](https://img.shields.io/badge/license-MIT-green)]()
 
-**Status:** Pre-alpha. All core types, runtime, adapters, audio pipeline, federation, VS Code extension, and capability marketplace are implemented. 411 tests pass, 0 lint errors, build is clean across 12 packages. Recent additions: webview audio capture (Node.js host fix), local Whisper fallback (binary → cloud chain), disk persistence for memory/provenance/signaling, and 132 adapter tests. See [`USIR_REPO/IMPLEMENTATION.md`](USIR_REPO/IMPLEMENTATION.md) for detailed status.
+**Status:** Pre-alpha. All core types, runtime, adapters, audio pipeline, federation, VS Code extension, and capability marketplace are implemented. **501 tests pass**, 0 lint errors, build is clean across 12 packages. Recent additions: webview audio capture (Node.js host fix), local Whisper fallback (binary→cloud), JSON/SQLite persistence, retry+circuit breaker in executor, TreeWalker DOM extraction (fixes SPA scalability), and 132 adapter tests. See [`USIR_REPO/IMPLEMENTATION.md`](USIR_REPO/IMPLEMENTATION.md) for detailed status.
 
 ## Motivation
 
@@ -68,8 +68,8 @@ usir/
 
 | Package | LOC | Tests | Description |
 |---------|-----|-------|-------------|
-| `@usir/protocol` | ~2,000 | 45 | Shared schemas, ontologies, entity types, Storage interface |
-| `@usir/runtime` | ~2,100 | 60 | Core engine: memory, router, executor (retry + circuit breaker), A2U, provenance, JSON/SQLite persistence |
+| `@usir/protocol` | ~2,000 | 41 | Shared schemas, ontologies, entity types, Storage interface |
+| `@usir/runtime` | ~2,200 | 60 | Core engine: memory, router, executor (retry + circuit breaker), A2U, provenance, JSON/SQLite persistence (Storage interface), CircuitBreaker |
 | `@usir/audio-pipeline` | ~480 | 24 | Voice capture, VAD, STT, fused intent, local Whisper fallback |
 | `@usir/federation` | ~4,760 | 73 | P2P WebRTC, CRDT graph sync, L8 collaboration, signaling persistence |
 | `@usir/registry` | ~2,440 | 72 | Capability marketplace REST API |
@@ -78,14 +78,16 @@ usir/
 | `@usir/adapters-iot` | ~1,080 | 33 | MQTT, CoAP, Modbus/OPC-UA, sensor fusion |
 | `@usir/adapters-xr` | ~710 | 20 | Unity bridge, spatial anchors, XR input |
 | `@usir/vscode-adapter` | ~560 | 65 | VS Code tiered snapshots + 9 tools (debounce, coalescing, caps, engine, tools) |
-| `@usir/browser-adapter` | ~490 | 67 | Browser DOM accessibility tree (7 tools, dom-graph, viewport filtering) |
-| `@usir/playwright-adapter` | ~470 | 7 | Playwright DOM extractor + 8 tools |
+| `@usir/browser-adapter` | ~490 | 68 | Browser DOM accessibility tree (7 tools, dom-graph, TreeWalker-based viewport filtering) |
+| `@usir/playwright-adapter` | ~470 | 7 | Playwright DOM extractor (TreeWalker-based, scalable), 8 tools |
 
 ## Key Concepts
 
 - **L0.5 Provenance**: Every mutation records intent, actor, rationale, authorization chain, causal parents, and semantic diffs. Auditable, replayable, cross-runtime.
 - **A2U Protocol**: 3-tier trust gate (auto/confirm/block) keeps humans in control of autonomous agents.
 - **3-Tier Snapshot**: Hot (16ms — cursor/focus), Warm (150ms — visible entities), Cold (seconds — full graph).
+- **Retry + Circuit Breaker**: Steps retry with exponential backoff (+jitter); per-tool circuit breakers (CLOSED/OPEN/HALF_OPEN) fail fast after repeated failures.
+- **Dual Persistence**: JSON files (zero-dependency default) or SQLite (opt-in via `better-sqlite3`), both implementing a shared `Storage` interface.
 - **Federated Runtime**: P2P WebRTC with Yjs CRDT sync, L8 collaboration handlers (share, discuss, annotate, broadcast).
 - **Capability Marketplace**: Public registry, trust scoring (weighted factors + exponential decay), pricing & invoicing (free/call/metered/subscription), payout system.
 
@@ -146,7 +148,7 @@ USIR draws from the historical analogy of protocol layers:
 
 ## Status
 
-🚧 **Pre-alpha** — Core runtime, federation, capability marketplace, adapters (VS Code, browser, Playwright), audio pipeline, and VS Code extension are implemented. **411 tests pass** across 12 packages with 0 lint errors. Key recent additions: webview-based audio capture (fixes Node.js extension host), local Whisper fallback (binary → cloud), disk persistence (memory, provenance, signaling), 132 adapter tests. Next: CI/CD pipeline, publish `@usir/protocol` to npm, and test the extension in a live VS Code instance.
+🚧 **Pre-alpha** — Core runtime, federation, capability marketplace, all adapters, audio pipeline, and VS Code extension are implemented. **501 tests pass** across 12 packages with 0 lint errors. Key recent additions: webview audio capture, local Whisper fallback, JSON/SQLite persistence (dual backend), retry+circuit breaker in executor, TreeWalker DOM extraction (fixes SPA scalability), Storage interface in protocol. Next: CI/CD pipeline, publish `@usir/protocol` to npm, and test the extension in a live VS Code instance.
 
 ## License
 

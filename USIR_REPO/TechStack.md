@@ -34,7 +34,7 @@ Pipeline stages: `build` -> `test`/`typecheck` -> `lint`
 | Vitest | ^4.1.8 (4.1.8) | Test runner — all 12 packages |
 | Vite | 8.0.16 (transitive) | Underlying dev server/bundler for Vitest |
 
-411 tests across all packages (runtime: 50, audio-pipeline: 24, federation: 73, vscode-adapter: 65, browser-adapter: 67, protocol: 45, IoT: 33, XR: 20, registry: 72, OS: 30, registry-client: 8, playwright: 7), all passing.
+501 tests across all packages (runtime: 60, audio-pipeline: 24, federation: 73, vscode-adapter: 65, browser-adapter: 68, protocol: 41, IoT: 33, XR: 20, registry: 72, OS: 30, registry-client: 8, playwright: 7), all passing.
 
 ## Linting
 
@@ -74,8 +74,9 @@ Key rules: `consistent-type-imports` (error), `no-unused-vars` (warn), `no-expli
 | VS Code Webview API + Web Audio API | Microphone capture via hidden webview (bridge pattern) |
 | VS Code Extension API | Editor integration, snapshots, commands, webview panels |
 | `child_process.spawn` | Local Whisper CLI / whisper.cpp invocation |
-| `node:fs` / `node:path` | JSON-based disk persistence for memory, provenance, signaling (default) |
-| `better-sqlite3` (optional) | SQLite persistence — drop-in `Storage` backend, opt-in via `pnpm add better-sqlite3` |
+| `node:fs` / `node:path` | JSON-based disk persistence for memory, provenance, signaling (default via `JsonFileStorage`) |
+| `better-sqlite3` (optional) | SQLite persistence — drop-in `SqliteStorage` backend, opt-in via `pnpm add better-sqlite3` |
+| `document.createTreeWalker` | DOM extraction in Playwright & browser adapters (replaces `querySelectorAll('*')` for SPA scalability) |
 | `FormData` / `Blob` | Audio file upload to cloud Whisper STT |
 
 ## External Services
