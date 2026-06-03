@@ -19,9 +19,49 @@ import {
 } from '@usir/protocol/provenance';
 import type { SemanticEntity } from '@usir/protocol/entities';
 import type { BaseIntent } from '@usir/protocol/intents';
+import { saveJSON, loadJSON, type Persistable } from '../persist';
 
-export class ProvenanceStore {
+export interface ProvenanceStoreData {
+  nodes: Array<[string, ProvenanceNode]>;
+  byEntity: Array<[string, string[]]>;
+  byIntent: Array<[string, string]>;
+  byActor: Array<[string, string[]]>;
+  capturedAt: number;
+}
+
+export class ProvenanceStore implements Persistable<ProvenanceStoreData> {
   private graph: ProvenanceGraph = createProvenanceGraph();
+
+  public toJSON(): ProvenanceStoreData {
+    return {
+      nodes: [...this.graph.nodes.entries()],
+      byEntity: [...this.graph.byEntity.entries()],
+      byIntent: [...this.graph.byIntent.entries()],
+      byActor: [...this.graph.byActor.entries()],
+      capturedAt: this.graph.capturedAt,
+    };
+  }
+
+  public fromJSON(data: ProvenanceStoreData): void {
+    this.graph = {
+      nodes: new Map(data.nodes ?? []),
+      byEntity: new Map(data.byEntity ?? []),
+      byIntent: new Map(data.byIntent ?? []),
+      byActor: new Map(data.byActor ?? []),
+      capturedAt: data.capturedAt ?? Date.now(),
+    };
+  }
+
+  public save(path: string): void {
+    saveJSON(path, this.toJSON());
+  }
+
+  public load(path: string): boolean {
+    const data = loadJSON<ProvenanceStoreData>(path);
+    if (!data) return false;
+    this.fromJSON(data);
+    return true;
+  }
 
   /**
    * Record a mutation. Called by the executor after every successful step.

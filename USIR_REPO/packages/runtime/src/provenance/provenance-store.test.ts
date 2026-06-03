@@ -122,4 +122,56 @@ describe('ProvenanceStore', () => {
     expect(store.listByActor('user:u1')).toHaveLength(1);
     expect(store.listByActor('user:nobody')).toHaveLength(0);
   });
+
+  describe('persistence', () => {
+    it('toJSON/fromJSON roundtrip preserves graph', async () => {
+      const store = new ProvenanceStore();
+      const before = dummyEntity('f1', 'old');
+      const after = dummyEntity('f1', 'new');
+      await store.record({
+        intent: { type: 'intent.manipulation.edit', intentId: 'int-1', timestamp: Date.now(), actor: { type: 'user', id: 'u1' }, confidence: 1 },
+        actor: { type: 'user', id: 'u1' },
+        rationale: { type: 'user-requested', rawInput: 'rename', interpretedIntent: 'edit' },
+        authorization: { type: 'delegated', delegateIntentId: 'int-1' },
+        entityBefore: before,
+        entityAfter: after,
+        causalParents: [],
+      });
+      const json = store.toJSON();
+      expect(json.nodes).toHaveLength(1);
+
+      const restored = new ProvenanceStore();
+      restored.fromJSON(json);
+      expect(restored.exportGraph().nodes.size).toBe(1);
+      expect(restored.listByActor('user:u1')).toHaveLength(1);
+    });
+
+    it('save/load file roundtrip preserves state', async () => {
+      const path = '/tmp/usir-test-provenance.json';
+      const store = new ProvenanceStore();
+      const before = dummyEntity('f1', 'old');
+      const after = dummyEntity('f1', 'new');
+      await store.record({
+        intent: { type: 'intent.manipulation.edit', intentId: 'int-1', timestamp: Date.now(), actor: { type: 'user', id: 'u1' }, confidence: 1 },
+        actor: { type: 'user', id: 'u1' },
+        rationale: { type: 'user-requested', rawInput: 'save', interpretedIntent: 'edit' },
+        authorization: { type: 'delegated', delegateIntentId: 'int-1' },
+        entityBefore: before,
+        entityAfter: after,
+        causalParents: [],
+      });
+      store.save(path);
+
+      const loaded = new ProvenanceStore();
+      const ok = loaded.load(path);
+      expect(ok).toBe(true);
+      expect(loaded.exportGraph().nodes.size).toBe(1);
+    });
+
+    it('load returns false for missing file', () => {
+      const store = new ProvenanceStore();
+      const ok = store.load('/tmp/usir-test-nonexistent.json');
+      expect(ok).toBe(false);
+    });
+  });
 });

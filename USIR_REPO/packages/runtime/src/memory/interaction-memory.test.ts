@@ -139,4 +139,54 @@ describe('InteractionMemory', () => {
     expect(snap.lastDiscussedEntityId).toBeNull();
     expect(snap.conversationHistory).toEqual([]);
   });
+
+  describe('persistence', () => {
+    it('toJSON/fromJSON roundtrip preserves state', () => {
+      const mem = new InteractionMemory('user-1');
+      mem.pushToHistory('e1', { rawInput: 'hello' });
+      mem.pushToHistory('e2');
+      const json = mem.toJSON();
+      const restored = new InteractionMemory('');
+      restored.fromJSON(json);
+      expect(restored.snapshot()).toEqual(mem.snapshot());
+    });
+
+    it('toJSON includes all fields', () => {
+      const mem = new InteractionMemory('user-99');
+      mem.pushToHistory('e1', { rawInput: 'test' });
+      const json = mem.toJSON();
+      expect(json.userId).toBe('user-99');
+      expect(json.history).toEqual(['e1']);
+      expect(json.conversationHistory).toHaveLength(1);
+      expect(json.lastDiscussed).toBe('e1');
+      expect(typeof json.sessionStartedAt).toBe('number');
+    });
+
+    it('save/load file roundtrip preserves state', () => {
+      const path = '/tmp/usir-test-interaction-memory.json';
+      const mem = new InteractionMemory('user-persist');
+      mem.pushToHistory('e1', { rawInput: 'persist test' });
+      mem.pushToHistory('e2');
+      mem.save(path);
+
+      const loaded = new InteractionMemory('');
+      const ok = loaded.load(path);
+      expect(ok).toBe(true);
+      expect(loaded.snapshot()).toEqual(mem.snapshot());
+    });
+
+    it('load returns false for missing file', () => {
+      const mem = new InteractionMemory('user-1');
+      const ok = mem.load('/tmp/usir-test-nonexistent.json');
+      expect(ok).toBe(false);
+    });
+
+    it('fromJSON with empty data uses defaults', () => {
+      const mem = new InteractionMemory('user-default');
+      mem.fromJSON({} as any);
+      const snap = mem.snapshot();
+      expect(snap.recentEntityIds).toEqual([]);
+      expect(snap.lastDiscussedEntityId).toBeNull();
+    });
+  });
 });

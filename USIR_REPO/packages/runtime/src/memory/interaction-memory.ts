@@ -1,11 +1,3 @@
-/**
- * Interaction Memory — solves "it", "that", "previous".
- *
- * The most underrated layer in USIR. Voice computing remains frustrating
- * without persistent contextual grounding. This module is the runtime
- * half of the InteractionMemory feature.
- */
-
 import type {
   CognitiveReference,
   ConversationTurn,
@@ -16,10 +8,19 @@ import type {
   ConversationalReference,
 } from '@usir/protocol/memory';
 import type { SemanticEntity } from '@usir/protocol/entities';
+import { saveJSON, loadJSON, type Persistable } from '../persist';
 
 const HISTORY_LIMIT = 50;
 
-export class InteractionMemory {
+export interface InteractionMemoryData {
+  history: string[];
+  lastDiscussed: string | null;
+  conversationHistory: ConversationTurn[];
+  sessionStartedAt: number;
+  userId: string;
+}
+
+export class InteractionMemory implements Persistable<InteractionMemoryData> {
   private history: string[] = [];
   private lastDiscussed: string | null = null;
   private conversationHistory: ConversationTurn[] = [];
@@ -30,10 +31,35 @@ export class InteractionMemory {
     this.userId = userId;
   }
 
-  /**
-   * Push an entity to the front of the history. Called whenever
-   * the user references, opens, edits, or discusses an entity.
-   */
+  public toJSON(): InteractionMemoryData {
+    return {
+      history: [...this.history],
+      lastDiscussed: this.lastDiscussed,
+      conversationHistory: [...this.conversationHistory],
+      sessionStartedAt: this.sessionStartedAt,
+      userId: this.userId,
+    };
+  }
+
+  public fromJSON(data: InteractionMemoryData): void {
+    this.history = data.history ?? [];
+    this.lastDiscussed = data.lastDiscussed ?? null;
+    this.conversationHistory = data.conversationHistory ?? [];
+    this.sessionStartedAt = data.sessionStartedAt ?? Date.now();
+    this.userId = data.userId ?? this.userId;
+  }
+
+  public save(path: string): void {
+    saveJSON(path, this.toJSON());
+  }
+
+  public load(path: string): boolean {
+    const data = loadJSON<InteractionMemoryData>(path);
+    if (!data) return false;
+    this.fromJSON(data);
+    return true;
+  }
+
   public pushToHistory(entityId: string, options?: { intentId?: string; rawInput?: string }): void {
     this.history = this.history.filter((id) => id !== entityId);
     this.history.unshift(entityId);
@@ -50,10 +76,6 @@ export class InteractionMemory {
     }
   }
 
-  /**
-   * Resolve a CognitiveReference to a concrete entity id.
-   * This is the heart of voice-friendly interaction.
-   */
   public resolve(reference: CognitiveReference, candidateEntities: SemanticEntity[]): string | null {
     switch (reference.kind) {
       case 'temporal':
@@ -69,10 +91,8 @@ export class InteractionMemory {
 
   private resolveTemporal(ref: TemporalReference): string | null {
     if (!ref.eventType) {
-      // Default: most recent
       return this.history[0] ?? null;
     }
-    // For now: simple heuristic. Real impl would index by event type.
     return this.history[0] ?? null;
   }
 
@@ -99,7 +119,6 @@ export class InteractionMemory {
     if (!ref.anchorEntityId) return null;
     const anchor = candidates.find((e) => e.id === ref.anchorEntityId);
     if (!anchor?.spatial) return null;
-    // Find candidates that are spatially related
     const matches = candidates.filter((e) => {
       if (e.id === ref.anchorEntityId) return false;
       if (!e.spatial) return false;
@@ -107,7 +126,6 @@ export class InteractionMemory {
     });
     if (matches.length === 0) return null;
     if (matches.length === 1) return matches[0]!.id;
-    // Apply size/visual attribute filters
     if (ref.sizeRelation) {
       const sizeFiltered = matches.filter((e) => this.matchesSizeRelation(anchor, e, ref.sizeRelation!));
       if (sizeFiltered.length > 0) return sizeFiltered[0]!.id;
@@ -116,7 +134,6 @@ export class InteractionMemory {
   }
 
   private resolveSemantic(ref: SemanticReference, candidates: SemanticEntity[]): string | null {
-    // Simple substring match in display name and role. Real impl would use embeddings.
     const desc = ref.description.toLowerCase();
     const matches = candidates.filter((e) => e.displayName.toLowerCase().includes(desc) || e.role.toLowerCase().includes(desc));
     return matches[0]?.id ?? null;

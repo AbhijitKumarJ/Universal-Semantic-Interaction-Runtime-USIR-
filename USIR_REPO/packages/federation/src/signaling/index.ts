@@ -1,3 +1,5 @@
+import { writeFileSync, readFileSync, existsSync, mkdirSync } from 'node:fs';
+import { dirname } from 'node:path';
 import type { FederationEnvelope } from '../message';
 
 export type SignalingMessageHandler = (envelope: FederationEnvelope) => void;
@@ -6,6 +8,21 @@ export interface SignalingPeer {
   peerId: string;
   send: SignalingMessageHandler;
   connectedAt: number;
+}
+
+export interface SignalingServerData {
+  messageLog: FederationEnvelope[];
+}
+
+function saveJSON(path: string, data: unknown): void {
+  const dir = dirname(path);
+  if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
+  writeFileSync(path, JSON.stringify(data, null, 2), 'utf-8');
+}
+
+function loadJSON<T>(path: string): T | null {
+  if (!existsSync(path)) return null;
+  return JSON.parse(readFileSync(path, 'utf-8')) as T;
 }
 
 export class SignalingServer {
@@ -67,6 +84,25 @@ export class SignalingServer {
 
   getRecentMessages(count: number = 50): FederationEnvelope[] {
     return this.messageLog.slice(-count);
+  }
+
+  toJSON(): SignalingServerData {
+    return { messageLog: [...this.messageLog] };
+  }
+
+  fromJSON(data: SignalingServerData): void {
+    this.messageLog = data.messageLog ?? [];
+  }
+
+  save(path: string): void {
+    saveJSON(path, this.toJSON());
+  }
+
+  load(path: string): boolean {
+    const data = loadJSON<SignalingServerData>(path);
+    if (!data) return false;
+    this.fromJSON(data);
+    return true;
   }
 
   clear(): void {
