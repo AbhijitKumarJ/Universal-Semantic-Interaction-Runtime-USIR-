@@ -78,6 +78,9 @@
 | Settings: API keys, LLM endpoint | ✅ |
 | Disambiguation Waypoint UI (HTML panel) | ✅ |
 | Auto-update `InteractionMemory` from cursor focus | ✅ |
+| Fix audio capture for Node.js extension host → hidden webview with postMessage IPC | ✅ |
+| Wire local Whisper fallback (local binary first, cloud API as backup) | ✅ |
+| Wire `LocalWhisperClient` via `FallbackWhisperClient` in extension activation | ✅ |
 
 ---
 
@@ -99,6 +102,8 @@
 | Task | Status | Priority |
 |------|--------|----------|
 | Write tests (protocol, runtime, audio-pipeline) | ✅ | Critical |
+| Write tests for `@usir/vscode-adapter` (Hot/Warm/Cold/SnapshotEngine/ToolRegistry — 65 tests) | ✅ | Critical |
+| Write tests for `@usir/browser-adapter` (Hot/Warm/Cold/SnapshotEngine/ToolRegistry/dom-adapter — 67 tests) | ✅ | Critical |
 | Fix build (`@types/node`, exports map, moduleResolution) | ✅ | Critical |
 | Set up ESLint with typescript-eslint | ✅ | High |
 | Fix `.gitignore` (uncomment dist/, .turbo/, coverage/) | ✅ | Medium |
@@ -106,9 +111,9 @@
 | Set up CI/CD (GitHub Actions) | 🔜 | Critical |
 | Publish `@usir/protocol` to npm (0.1.0-alpha) | 🔜 | Critical |
 | Test VS Code extension in actual editor | 🔜 | High |
-| Add local Whisper.cpp fallback for offline mode | ⏳ | High |
+| Add local Whisper.cpp fallback via `LocalWhisperClient` + `FallbackWhisperClient` | ✅ | High |
 | Add retry logic to `TopologicalExecutor` | ⏳ | Medium |
-| Persist interaction memory (SQLite or JSON) | ⏳ | Medium |
+| Persist interaction memory, provenance store, and signaling server (JSON file) | ✅ | Medium |
 | Set up npm packaging config (publishConfig, files whitelist) | ⏳ | Medium |
 | Add `.nvmrc` and `.npmrc` | ⏳ | Low |
 
@@ -283,8 +288,8 @@
 | Metric | Value |
 |--------|-------|
 | TypeScript packages | 12 (+ `@usir/adapters-iot`, `@usir/adapters-xr`) |
-| Lines of implementation | ~12,700 (+ ~1,247 in IoT adapters, XR adapters) |
-| Tests | 295 (242 + 33 IoT + 20 XR) |
+| Lines of implementation | ~14,000 |
+| Tests | 411 total: 50 runtime + 24 audio-pipeline + 73 federation + 65 vscode-adapter + 67 browser-adapter + 45 protocol + 33 IoT + 20 XR + 34 registry |
 | Lint errors | 0 |
 | Warnings | ~60 (all `no-explicit-any` / `no-unused-vars`) |
 | CI | Not configured |

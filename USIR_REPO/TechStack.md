@@ -31,10 +31,10 @@ Pipeline stages: `build` -> `test`/`typecheck` -> `lint`
 
 | Technology | Version | Role |
 |------------|---------|------|
-| Vitest | ^4.1.8 (4.1.8) | Test runner — all 3 tested packages |
+| Vitest | ^4.1.8 (4.1.8) | Test runner — all 12 packages |
 | Vite | 8.0.16 (transitive) | Underlying dev server/bundler for Vitest |
 
-88 tests across 3 packages, all passing.
+411 tests across all packages (runtime: 50, audio-pipeline: 24, federation: 73, vscode-adapter: 65, browser-adapter: 67, protocol: 45, IoT: 33, XR: 20, registry: 72, OS: 30, registry-client: 8, playwright: 7), all passing.
 
 ## Linting
 
@@ -55,6 +55,14 @@ Key rules: `consistent-type-imports` (error), `no-unused-vars` (warn), `no-expli
 | @usir/audio-pipeline | packages/audio-pipeline/ | @usir/protocol |
 | @usir/vscode-adapter | adapters/vscode/ | @usir/protocol, @usir/runtime |
 | @usir/vscode-extension | apps/vscode-extension/ | All above packages |
+| @usir/browser-adapter | adapters/browser/ | @usir/protocol, @usir/runtime |
+| @usir/playwright-adapter | adapters/playwright/ | @usir/protocol, @usir/runtime |
+| @usir/federation | packages/federation/ | @usir/protocol, @usir/runtime |
+| @usir/registry | packages/registry/ | @usir/protocol, @usir/runtime |
+| @usir/registry-client | packages/registry-client/ | @usir/protocol, @usir/runtime |
+| @usir/adapters-os | packages/adapters-os/ | @usir/protocol, @usir/runtime |
+| @usir/adapters-iot | packages/adapters-iot/ | @usir/protocol, @usir/runtime |
+| @usir/adapters-xr | packages/adapters-xr/ | @usir/protocol, @usir/runtime |
 
 ## Platform APIs Used
 
@@ -63,16 +71,19 @@ Key rules: `consistent-type-imports` (error), `no-unused-vars` (warn), `no-expli
 | Web Crypto API (`crypto.subtle`) | SHA-256 hashing for provenance |
 | `node:crypto` | SHA-256 fallback (dynamic import) |
 | `fetch()` | LLM (OpenAI) and STT (Groq) API calls |
-| Web Audio API | Microphone capture, audio processing |
-| VS Code Extension API | Editor integration, snapshots, commands |
-| `FormData` / `Blob` | Audio file upload to Whisper STT |
+| VS Code Webview API + Web Audio API | Microphone capture via hidden webview (bridge pattern) |
+| VS Code Extension API | Editor integration, snapshots, commands, webview panels |
+| `child_process.spawn` | Local Whisper CLI / whisper.cpp invocation |
+| `node:fs` / `node:path` | JSON-based disk persistence for memory, provenance, signaling |
+| `FormData` / `Blob` | Audio file upload to cloud Whisper STT |
 
 ## External Services
 
 | Service | Endpoint | Usage |
 |---------|----------|-------|
 | OpenAI | api.openai.com | LLM intent routing (GPT-4o) |
-| Groq | api.groq.com | Whisper STT (whisper-large-v3-turbo) |
+| Groq | api.groq.com | Cloud Whisper STT fallback (whisper-large-v3-turbo) |
+| Local Whisper | — | Primary STT via whisper CLI or whisper.cpp binary (auto-detected) |
 
 ## Development Workflow
 

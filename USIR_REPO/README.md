@@ -26,7 +26,7 @@ The runtime operates on: Intent, Memory,               Buttons, Pixels,
 | **1. Universal Intent Ontology** | `@usir/protocol` | The "HTTP of interaction" — ~50 cognitive verbs across 8 layers (L1–L8) |
 | **2. Interaction Memory** | `@usir/runtime` | Resolves "it", "that", "previous" via temporal/spatial/conversational/semantic context |
 | **3. Semantic Graph** | `@usir/protocol` | Apps expose entities, not widgets |
-| **4. Semantic Snapshot** | `@usir/protocol` | Universal representation every adapter emits |
+| **4. Semantic Snapshot** | `adapters/*` | 3-tier (Hot/Warm/Cold) snapshot every adapter emits |
 | **5. Deterministic Execution** | `@usir/runtime` | LLM plans, runtime executes (auditable, rollback-able, parallel) |
 | **6. Semantic Adapters** | `adapters/*` | Bridges existing software (VS Code, browser, OS) into USIR |
 
@@ -41,8 +41,8 @@ usir/
 │   ├── runtime/           # Interaction Memory, Intent Router, Topological Executor
 │   └── audio-pipeline/    # Whisper STT, VAD, FusedIntent
 ├── adapters/
-│   ├── vscode/            # VS Code adapter (Hot/Warm/Cold tiered snapshots)
-│   ├── browser/           # Browser in-process adapter (DOM → SemanticEntity, 7 tools)
+│   ├── vscode/            # VS Code adapter (Hot/Warm/Cold tiered snapshots, 9 tools, 65 tests)
+│   ├── browser/           # Browser in-process adapter (DOM → SemanticEntity, 7 tools, 67 tests)
 │   └── playwright/        # Playwright zero-shot adapter (headless browser automation, 8 tools)
 ├── apps/
 │   └── vscode-extension/  # The deployable VS Code extension (MVP entry point)
@@ -87,7 +87,7 @@ pnpm --filter @usir/vscode-extension run dev
 | `pnpm build` | Compile all packages |
 | `pnpm typecheck` | Type-check all packages (no emit) |
 | `pnpm lint` | Lint all packages (ESLint + typescript-eslint) |
-| `pnpm test` | Run all tests (Vitest, 88 tests) |
+| `pnpm test` | Run all tests (Vitest, 411 tests) |
 | `pnpm clean` | Remove all build artifacts |
 | `pnpm dev` | Watch mode for all packages |
 
@@ -120,12 +120,12 @@ USIR draws from the historical analogy of protocol layers:
 ## Status
 
 [![build](https://img.shields.io/badge/build-passing-brightgreen)]()
-[![tests](https://img.shields.io/badge/tests-88-brightgreen)]()
+[![tests](https://img.shields.io/badge/tests-411-brightgreen)]()
 [![lint](https://img.shields.io/badge/lint-passing-brightgreen)]()
 [![typescript](https://img.shields.io/badge/TypeScript-5.9-blue)]()
 [![license](https://img.shields.io/badge/license-MIT-green)]()
 
-🚧 **Pre-alpha** — All core types, runtime classes, and VS Code extension are implemented. Build is clean, 88 tests pass, lint is configured. Next up: CI/CD pipeline, publish `@usir/protocol` to npm, and test the extension in a live VS Code instance.
+🚧 **Pre-alpha** — All core types, runtime classes, adapters, audio pipeline, federation, and VS Code extension are implemented. Build is clean, **411 tests pass** across 12 packages, lint is configured. Key recent additions: Webview audio capture (fixes Node.js extension host compatibility), local Whisper fallback (binary-first, cloud backup), disk persistence for InteractionMemory/ProvenanceStore/SignalingServer, and 132 new adapter tests. Next up: CI/CD pipeline, publish `@usir/protocol` to npm, and test the extension in a live VS Code instance.
 
 ## License
 
