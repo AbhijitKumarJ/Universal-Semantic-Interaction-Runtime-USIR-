@@ -1,8 +1,8 @@
 import * as vscode from 'vscode';
-import type { FastWhisperClient } from '@usir/audio-pipeline';
+import type { STTProvider } from '@usir/audio-pipeline';
 
 export interface WebviewAudioCaptureConfig {
-  stt: FastWhisperClient;
+  stt: STTProvider;
   language?: string;
   prompt?: string;
   onUtterance: (text: string) => void;

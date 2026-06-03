@@ -7,7 +7,7 @@ import { ProvenanceStore } from '@usir/runtime';
 import { InteractionMemory } from '@usir/runtime';
 import { TrustClassifier } from '@usir/runtime';
 import { A2UDispatcher } from '@usir/runtime';
-import { FastWhisperClient, buildFusedIntent, type PointingTarget, type ImplicitSignals } from '@usir/audio-pipeline';
+import { type STTProvider, FastWhisperClient, LocalWhisperClient, FallbackWhisperClient, buildFusedIntent, type PointingTarget, type ImplicitSignals } from '@usir/audio-pipeline';
 import { WebviewAudioCapture } from './audio/webview-audio-capture';
 
 let snapshotEngine: SnapshotEngine;
@@ -18,7 +18,7 @@ let provenanceStore: ProvenanceStore;
 let interactionMemory: InteractionMemory;
 let a2uDispatcher: A2UDispatcher;
 let audioCapture: WebviewAudioCapture | null = null;
-let whisperClient: FastWhisperClient;
+let whisperClient: STTProvider;
 
 export async function activate(context: vscode.ExtensionContext) {
   console.log('USIR extension activating...');
@@ -72,11 +72,16 @@ export async function activate(context: vscode.ExtensionContext) {
     executor,
   );
 
-  // 6. Initialize whisper client
-  whisperClient = new FastWhisperClient({
+  // 6. Initialize whisper client with local-first fallback
+  const fastWhisper = new FastWhisperClient({
     apiKey:
       (config.get('groqApiKey') as string) ?? process.env.GROQ_API_KEY ?? '',
   });
+  const localWhisper = new LocalWhisperClient({
+    binaryPath: config.get('localWhisperBinary') as string | undefined,
+    modelPath: config.get('localWhisperModel') as string | undefined,
+  });
+  whisperClient = new FallbackWhisperClient(localWhisper, fastWhisper);
 
   // 7. Register VS Code event listeners -> update snapshot engine
   context.subscriptions.push(
