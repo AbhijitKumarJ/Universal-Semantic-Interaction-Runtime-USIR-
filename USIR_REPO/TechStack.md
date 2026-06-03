@@ -74,7 +74,8 @@ Key rules: `consistent-type-imports` (error), `no-unused-vars` (warn), `no-expli
 | VS Code Webview API + Web Audio API | Microphone capture via hidden webview (bridge pattern) |
 | VS Code Extension API | Editor integration, snapshots, commands, webview panels |
 | `child_process.spawn` | Local Whisper CLI / whisper.cpp invocation |
-| `node:fs` / `node:path` | JSON-based disk persistence for memory, provenance, signaling |
+| `node:fs` / `node:path` | JSON-based disk persistence for memory, provenance, signaling (default) |
+| `better-sqlite3` (optional) | SQLite persistence — drop-in `Storage` backend, opt-in via `pnpm add better-sqlite3` |
 | `FormData` / `Blob` | Audio file upload to cloud Whisper STT |
 
 ## External Services

@@ -10,3 +10,5 @@ export * from './a2u/trust-classifier';
 export * from './a2u/dispatcher';
 export { createFederationIntegration } from './federation-bridge';
 export type { FederationIntegration } from './federation-bridge';
+export * from './persist';
+export { SqliteStorage } from './sqlite-storage';

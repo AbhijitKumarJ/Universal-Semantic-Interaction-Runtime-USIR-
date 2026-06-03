@@ -6,3 +6,4 @@ export * from './waypoint';
 export * from './memory';
 export * from './provenance';
 export * from './capability';
+export * from './storage';

@@ -40,6 +40,10 @@
     "./capability": {
       "types": "./dist/capability/index.d.ts",
       "import": "./dist/capability/index.js"
+    },
+    "./storage": {
+      "types": "./dist/storage.d.ts",
+      "import": "./dist/storage.js"
     }
   },
   "scripts": {

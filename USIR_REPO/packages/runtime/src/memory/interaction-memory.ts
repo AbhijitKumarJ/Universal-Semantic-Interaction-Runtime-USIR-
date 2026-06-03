@@ -8,7 +8,8 @@ import type {
   ConversationalReference,
 } from '@usir/protocol/memory';
 import type { SemanticEntity } from '@usir/protocol/entities';
-import { saveJSON, loadJSON, type Persistable } from '../persist';
+import type { Storage } from '@usir/protocol/storage';
+import { saveJSON, loadJSON, JsonFileStorage, type Persistable } from '../persist';
 
 const HISTORY_LIMIT = 50;
 
@@ -26,9 +27,11 @@ export class InteractionMemory implements Persistable<InteractionMemoryData> {
   private conversationHistory: ConversationTurn[] = [];
   private sessionStartedAt: number = Date.now();
   private userId: string;
+  private storage: Storage;
 
-  constructor(userId: string) {
+  constructor(userId: string, storage?: Storage) {
     this.userId = userId;
+    this.storage = storage ?? new JsonFileStorage();
   }
 
   public toJSON(): InteractionMemoryData {
@@ -50,11 +53,11 @@ export class InteractionMemory implements Persistable<InteractionMemoryData> {
   }
 
   public save(path: string): void {
-    saveJSON(path, this.toJSON());
+    this.storage.save(path, this.toJSON());
   }
 
   public load(path: string): boolean {
-    const data = loadJSON<InteractionMemoryData>(path);
+    const data = this.storage.load<InteractionMemoryData>(path);
     if (!data) return false;
     this.fromJSON(data);
     return true;

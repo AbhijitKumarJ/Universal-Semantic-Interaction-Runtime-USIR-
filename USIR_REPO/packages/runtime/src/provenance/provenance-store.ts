@@ -19,7 +19,8 @@ import {
 } from '@usir/protocol/provenance';
 import type { SemanticEntity } from '@usir/protocol/entities';
 import type { BaseIntent } from '@usir/protocol/intents';
-import { saveJSON, loadJSON, type Persistable } from '../persist';
+import type { Storage } from '@usir/protocol/storage';
+import { saveJSON, loadJSON, JsonFileStorage, type Persistable } from '../persist';
 
 export interface ProvenanceStoreData {
   nodes: Array<[string, ProvenanceNode]>;
@@ -31,6 +32,11 @@ export interface ProvenanceStoreData {
 
 export class ProvenanceStore implements Persistable<ProvenanceStoreData> {
   private graph: ProvenanceGraph = createProvenanceGraph();
+  private storage: Storage;
+
+  constructor(storage?: Storage) {
+    this.storage = storage ?? new JsonFileStorage();
+  }
 
   public toJSON(): ProvenanceStoreData {
     return {
@@ -53,11 +59,11 @@ export class ProvenanceStore implements Persistable<ProvenanceStoreData> {
   }
 
   public save(path: string): void {
-    saveJSON(path, this.toJSON());
+    this.storage.save(path, this.toJSON());
   }
 
   public load(path: string): boolean {
-    const data = loadJSON<ProvenanceStoreData>(path);
+    const data = this.storage.load<ProvenanceStoreData>(path);
     if (!data) return false;
     this.fromJSON(data);
     return true;

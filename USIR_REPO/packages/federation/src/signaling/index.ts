@@ -1,5 +1,6 @@
 import { writeFileSync, readFileSync, existsSync, mkdirSync } from 'node:fs';
 import { dirname } from 'node:path';
+import type { Storage } from '@usir/protocol/storage';
 import type { FederationEnvelope } from '../message';
 
 export type SignalingMessageHandler = (envelope: FederationEnvelope) => void;
@@ -25,10 +26,20 @@ function loadJSON<T>(path: string): T | null {
   return JSON.parse(readFileSync(path, 'utf-8')) as T;
 }
 
+const jsonStorage: Storage = {
+  save: saveJSON as Storage['save'],
+  load: loadJSON as Storage['load'],
+};
+
 export class SignalingServer {
   private peers: Map<string, SignalingPeer> = new Map();
   private messageLog: FederationEnvelope[] = [];
   private maxLogSize = 1000;
+  private storage: Storage;
+
+  constructor(storage?: Storage) {
+    this.storage = storage ?? jsonStorage;
+  }
 
   register(peerId: string, send: SignalingMessageHandler): void {
     this.peers.set(peerId, {
@@ -95,11 +106,11 @@ export class SignalingServer {
   }
 
   save(path: string): void {
-    saveJSON(path, this.toJSON());
+    this.storage.save(path, this.toJSON());
   }
 
   load(path: string): boolean {
-    const data = loadJSON<SignalingServerData>(path);
+    const data = this.storage.load<SignalingServerData>(path);
     if (!data) return false;
     this.fromJSON(data);
     return true;
